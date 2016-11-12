@@ -19,25 +19,33 @@ public class InitialPanel extends JPanel {
 	 */
 	public InitialPanel() {
 		super();
+
+		// Seta as características do painel
 		setBounds(0, 0, 1200, 700);
 		setBackground(TakeABREAK.BACKGROUND_COLOR);
 		setLayout(null);
 
-		signoffButton = new JButton("Take a BREAK?");
+		// Botão de logoff
+		signoffButton = new JButton("<html>Take a <br />BREAK?</html>");
 		signoffButton.setBounds(0, 550, 240, 150);
 
+		// Botão para a página de contatos
 		contactsButton = new JButton("CONTACTS");
 		contactsButton.setBounds(240, 550, 240, 150);
 
+		// Botão para a página de grupos
 		groupsButton = new JButton("GROUPS");
 		groupsButton.setBounds(480, 550, 240, 150);
 
+		// Botão para a páginas de mídias (downloads)
 		mediaButton = new JButton("MEDIA");
 		mediaButton.setBounds(720, 550, 240, 150);
 
+		// Botão para a página inicial
 		homeButton = new JButton("HOME");
 		homeButton.setBounds(960, 550, 240, 150);
 
+		// Insere todos os elementos no painel
 		add(signoffButton);
 		add(contactsButton);
 		add(groupsButton);
