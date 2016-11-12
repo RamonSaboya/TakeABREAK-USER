@@ -26,14 +26,14 @@ public class TakeABREAK extends JFrame {
 	private HomePanel homePanel;
 
 	/**
-	 * Inicia a aplicaÁ„o da GUI
+	 * Inicia a aplica√ß√£o da GUI
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					TakeABREAK frame = new TakeABREAK();
-					frame.setLocationRelativeTo(null); // Centraliza a frame na tela, de acordo com a resoluÁ„o
+					frame.setLocationRelativeTo(null); // Centraliza a frame na tela, de acordo com a resolu√ß√£o
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -46,25 +46,25 @@ public class TakeABREAK extends JFrame {
 	 * Cria a frame da GUI
 	 */
 	public TakeABREAK() {
-		// Seta as caracterÌsticas da janela
+		// Seta as caracter√≠sticas da janela
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1200, 725);
 		setIconImage(new ImageIcon("dependencies\\32.png").getImage());
 		setTitle("Take a BREAK;");
 
-		// Inicia a contentPane (container principal)
+		// Inicia a contentPane (container principal) lula
 		contentPane = new JPanel();
 		contentPane.setLayout(null);
 		setContentPane(contentPane);
 
-		// Inicia as p·ginas do aplicativo
+		// Inicia as p√°ginas do aplicativo
 		startupPanel = new StartupPanel();
 		initialPanel = new InitialPanel();
 		userPanel = new UserPanel();
 		homePanel = new HomePanel();
 
-		setCurrent(userPanel); // Define a p·gina inicial
+		setCurrent(userPanel); // Define a p√°gina inicial
 
 		// Apenas para testes
 		contentPane.add(homePanel);
@@ -74,9 +74,9 @@ public class TakeABREAK extends JFrame {
 	}
 
 	/**
-	 * Atualiza o painel que est· em display na frame
+	 * Atualiza o painel que est√° em display na frame
 	 * 
-	 * @param panel Painel que ser· mostrado na frame
+	 * @param panel Painel que ser√° mostrado na frame
 	 */
 	public void setCurrent(JPanel panel) {
 		// Remove todos os paineis em display e revalida a frame
