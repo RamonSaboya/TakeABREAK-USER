@@ -53,7 +53,7 @@ public class TakeABREAK extends JFrame {
 		setIconImage(new ImageIcon("dependencies\\32.png").getImage());
 		setTitle("Take a BREAK;");
 
-		// Inicia a contentPane (container principal) lula
+		// Inicia a contentPane (container principal)
 		contentPane = new JPanel();
 		contentPane.setLayout(null);
 		setContentPane(contentPane);
