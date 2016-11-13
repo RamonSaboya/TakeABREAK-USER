@@ -15,6 +15,8 @@ public class Group {
 	public Group(int ID, String name, User user, Date date) {
 		this.ID = ID;
 		this.name = name;
+		this.members = new ArrayList<User>();
+		this.admin = new ArrayList<User>();
 		this.members.add(user);
 		this.admin.add(user);
 		this.amount = 1;
@@ -43,7 +45,7 @@ public class Group {
 
 	}
 
-	public boolean makeAdmin(User checkUser, User user) {
+	public boolean becomeAdmin(User checkUser, User user) {
 		if (this.admin.contains(checkUser)) {
 			this.admin.add(user);
 			return true;
@@ -58,38 +60,38 @@ public class Group {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
-	public ArrayList getMembers() {
-		return members;
+	public ArrayList<User> getMembers() {
+		return this.members;
 	}
 
-	public ArrayList getAdmin() {
-		return admin;
+	public ArrayList<User> getAdmin() {
+		return this.admin;
 	}
 
 	public int getAmount() {
-		return amount;
+		return this.amount;
 	}
 
 	public Date getBirthday() {
-		return birthday;
+		return this.birthday;
 	}
 
 	public void setID(int ID) {
-		ID = ID;
+		this.ID = ID;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setMembers(ArrayList members) {
+	public void setMembers(ArrayList<User> members) {
 		this.members = members;
 	}
 
-	public void setAdmin(ArrayList admin) {
+	public void setAdmin(ArrayList<User> admin) {
 		this.admin = admin;
 	}
 
