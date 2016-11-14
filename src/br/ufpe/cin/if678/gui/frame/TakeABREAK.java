@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import br.ufpe.cin.if678.gui.panel.ChangePassword;
 import br.ufpe.cin.if678.gui.panel.HomePanel;
 import br.ufpe.cin.if678.gui.panel.InitialPanel;
 import br.ufpe.cin.if678.gui.panel.SignInPanel;
@@ -20,7 +21,8 @@ public class TakeABREAK extends JFrame {
 	public static final Color BACKGROUND_COLOR = new Color(102, 255, 204);
 
 	private JPanel contentPane;
-
+	
+	private ChangePassword changePassword;
 	private StartupPanel startupPanel;
 	private InitialPanel initialPanel;
 	private UserPanel userPanel;
