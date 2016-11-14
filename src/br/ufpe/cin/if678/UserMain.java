@@ -1,9 +1,9 @@
 package br.ufpe.cin.if678;
 
-public class Main {
+public class UserMain {
 
 	public static void main(String[] args) {
-		Controller controller = Controller.getInstance();
+		UserController.getInstance();
 	}
 
 }
