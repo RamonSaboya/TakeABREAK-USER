@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 
 import br.ufpe.cin.if678.gui.panel.HomePanel;
 import br.ufpe.cin.if678.gui.panel.InitialPanel;
+import br.ufpe.cin.if678.gui.panel.ProfilePanel;
 import br.ufpe.cin.if678.gui.panel.SignInPanel;
 import br.ufpe.cin.if678.gui.panel.StartupPanel;
 import br.ufpe.cin.if678.gui.panel.UserPanel;
@@ -26,6 +27,7 @@ public class TakeABREAK extends JFrame {
 	private UserPanel userPanel;
 	private HomePanel homePanel;
 	private SignInPanel signInPanel;
+	private ProfilePanel profilePanel;
 
 	/**
 	 * Inicia a aplicação da GUI
@@ -66,14 +68,15 @@ public class TakeABREAK extends JFrame {
 		userPanel = new UserPanel();
 		homePanel = new HomePanel();
 		signInPanel = new SignInPanel();
+		profilePanel = new ProfilePanel();
 
-		setCurrent(signInPanel); // Define a página inicial
+		setCurrent(profilePanel); // Define a página inicial
 
 		// Apenas para testes
-		//contentPane.add(homePanel);
-		//contentPane.add(initialPanel);
-		//contentPane.repaint();
-		//contentPane.revalidate();
+//		contentPane.add(homePanel);
+		contentPane.add(initialPanel);
+		contentPane.repaint();
+		contentPane.revalidate();
 	}
 
 	/**
