@@ -61,7 +61,7 @@ public class Client implements Runnable {
 
 				socket.close();
 				this.socket = null;
-				System.out.println("[CLIENTE] Conex�o CU encerrada!");
+				System.out.println("[CLIENTE] Conex�o encerrada!");
 
 				System.out.println("Digite o ip e a porta do cliente, separados por espa�o para iniciar a conex�o");
 				this.ip = scanner.next();
