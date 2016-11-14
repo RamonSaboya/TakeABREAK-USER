@@ -22,7 +22,7 @@ public class TakeABREAK extends JFrame {
 
 	private JPanel contentPane;
 	
-	private ChangePassword changePassword;
+	private ChangePassword changePassword; //hey
 	private StartupPanel startupPanel;
 	private InitialPanel initialPanel;
 	private UserPanel userPanel;

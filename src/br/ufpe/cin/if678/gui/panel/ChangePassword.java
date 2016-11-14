@@ -52,7 +52,7 @@ public class ChangePassword extends JPanel {
 		txtHey = new JTextField();
 		txtHey.setBounds(151, 60, 233, 20);
 		add(txtHey);
-		txtHey.setColumns(10);
+		txtHey.setColumns(10); // hello
 		
 		JLabel lblNewPassword = new JLabel("New Password");
 		lblNewPassword.setBounds(76, 118, 70, 14);
