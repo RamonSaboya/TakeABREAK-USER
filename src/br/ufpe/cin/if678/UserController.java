@@ -35,16 +35,14 @@ public class UserController {
 
 			this.readerPair = new Pair<Reader, Thread>(reader, readerThread);
 			this.writerPair = new Pair<Writer, Thread>(writer, writerThread);
+			
+			readerThread.start();
+			writerThread.start();
 
 			writer.queueAction(Action.LOGIN, "Macarena");
-			
-			readerThread.join();
-			writerThread.join();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
