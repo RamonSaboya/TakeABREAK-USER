@@ -23,7 +23,7 @@ public class Group {
 		this.birthday = date;
 	}
 
-	public boolean add(User checkUser, User user) {
+	public boolean add(User checkUser, User user) { //commit test
 		if (this.admin.contains(checkUser)) {
 			this.members.add(user);
 			this.amount++;
