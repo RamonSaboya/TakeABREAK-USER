@@ -7,27 +7,41 @@ import java.net.SocketException;
 
 import br.ufpe.cin.if678.UserController;
 
+/**
+ * Gerenciador de leitura de um socket
+ * 
+ * @author Ramon
+ */
 public class Reader implements Runnable {
 
 	private Socket socket;
 
+	/**
+	 * Construtor do gerenciador de leitura
+	 * 
+	 * @param socket instância do socket
+	 */
 	public Reader(Socket socket) {
 		this.socket = socket;
 	}
 
+	/**
+	 * Método que será executado pela thread
+	 */
 	@Override
 	public void run() {
 		while (true) {
 			try {
+				// Utiliza a inteface de entrada de objetos
 				ObjectInputStream OIS = new ObjectInputStream(socket.getInputStream());
 
-				Action action = (Action) OIS.readObject();
+				// Lê a ação e o objecto que esteja relacionado a mesma
+				ServerAction action = (ServerAction) OIS.readObject();
 				Object object = OIS.readObject();
-
-				System.out.println(action.getID() + ": " + ((String) object));
 			} catch (SocketException e) {
-				UserController.getInstance().serverUnnavailble();
-				return;
+				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor
+				UserController.getInstance().serverUnnavailble(); // Avisa ao controlador que o cliente desconectou
+				return; // Encerra a execução da thread
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
