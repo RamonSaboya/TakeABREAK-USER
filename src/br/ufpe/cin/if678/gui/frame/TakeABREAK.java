@@ -71,14 +71,11 @@ public class TakeABREAK extends JFrame {
 		homePanel = new HomePanel();
 		signInPanel = new SignInPanel();
 		profilePanel = new ProfilePanel();
-<<<<<<< HEAD
 
 		setCurrent(startupPanel); // Define a página inicial
-=======
 		changePassword = new ChangePassword();
 		
 		setCurrent(profilePanel); // Define a página inicial
->>>>>>> branch 'master' of https://github.com/rsg3/TakeABREAK
 
 		// Apenas para testes
 		//contentPane.add(homePanel);
