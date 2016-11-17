@@ -17,6 +17,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 /**
+ * Classe que faz a criptiografia das mensagens de texto
  * 
  * @author João Filipe
  *
@@ -24,22 +25,31 @@ import javax.crypto.spec.IvParameterSpec;
  */
 public class MessegeEncryption {
 
-	private byte[] byteArray;
+	private byte[] encryptedMessege;
 	private SecretKey key;
 	private byte[] IV;
-
-	public MessegeEncryption(byte[] byteArray, SecretKey key, byte[] IV) {
-		// Gera uma String aleatória
+	
+	/**
+	 * Construtor da Menssagem criptografada
+	 * 
+	 * @param encryptedMessege contem o array de bytes da menssagem criptografada
+	 * @param key contem a chave usada na criptografia
+	 * @param IV contém o IV usado na cruptografia
+	 */
+	public MessegeEncryption(byte[] encryptedMessege, SecretKey key, byte[] IV) {
 		this.key = key;
-
-		// Encripta um objeto (file ou string)
-		this.byteArray = byteArray;
-		
+		this.encryptedMessege = encryptedMessege;
 		this.IV = IV;
 	}
 
-	public byte[] getByteArray() {
-		return byteArray;
+	/**
+	 * Retorna o array de bytes da menssagem criptografada
+	 * 
+	 * @return o array de bytes da menssagem criptografada
+	 * 	 
+	 */
+	public byte[] getEncryptedMessege() {
+		return encryptedMessege;
 	}
 
 	/**
@@ -61,6 +71,7 @@ public class MessegeEncryption {
 	}
 
 	/**
+	 * Recebe uma menssagem no formato de String e retorna um objeto MessegeEncryption, que contém a mensagem encripatada, a chave usada pra encriptá-la, e o IV
 	 * 
 	 * @param Sring message
 	 * @return MessegeEncryption
@@ -73,7 +84,6 @@ public class MessegeEncryption {
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws IOException
 	 * 
-	 *             Recebe uma menssagem no formato de String e retorna um objeto MessegeEncryption, que contém a mensagem encripatada, a chave usada pra encriptá-la, e o IV
 	 */
 	public static MessegeEncryption encrypt(String message) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
 		// Inicia o Cipher para AES
@@ -99,6 +109,7 @@ public class MessegeEncryption {
 	}
 
 	/**
+	 * Recebe um objeto MessegeEncrypted e retorna uma String com a mensagem decriptada
 	 * 
 	 * @param encryptedMessege
 	 * @return decryptedMessege
@@ -111,15 +122,14 @@ public class MessegeEncryption {
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws UnsupportedEncodingException
 	 * 
-	 *             Recebe um objeto MessegeEncrypted e retorna uma String com a mensagem decriptada
 	 */
 	public static String decrypt(MessegeEncryption encryptedMessege) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
 		// Inicia o Cipher para modo de decyptação AES
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
 		cipher.init(Cipher.DECRYPT_MODE, encryptedMessege.getKey(), new IvParameterSpec(encryptedMessege.getIV()));
 
-		// Decrypta a mensagem
-		return new String(cipher.doFinal(encryptedMessege.getByteArray()), "UTF-8");
+		// Retorna a mensagem decriptografada
+		return new String(cipher.doFinal(encryptedMessege.getEncryptedMessege()), "UTF-8");
 	}
 
 }
