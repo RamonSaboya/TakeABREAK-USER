@@ -2,14 +2,10 @@ package br.ufpe.cin.if678.communication;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.HashMap;
 
 import br.ufpe.cin.if678.UserController;
-import br.ufpe.cin.if678.business.Group;
-import br.ufpe.cin.if678.util.Pair;
 
 /**
  * Gerenciador de leitura de um socket
@@ -40,7 +36,6 @@ public class Reader implements Runnable {
 	/**
 	 * Método que será executado pela thread
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		while (true) {
@@ -53,23 +48,7 @@ public class Reader implements Runnable {
 				ServerAction action = (ServerAction) OIS.readObject();
 				Object object = OIS.readObject();
 
-				switch (action) {
-				case SEND_USER_LIST:
-					HashMap<InetSocketAddress, String> userList = (HashMap<InetSocketAddress, String>) object;
-
-					controller.updateUserList(userList);
-					break;
-				case SEND_USER_CONNECTED:
-					Pair<InetSocketAddress, String> data = (Pair<InetSocketAddress, String>) object;
-
-					controller.userConnected(data); // TODO colocar no listener
-					break;
-				case SEND_GROUP:
-					Group group = (Group) object;
-
-					controller.loadGroup(group);
-					break;
-				}
+				controller.callEvent(action, object);
 			} catch (SocketException e) {
 				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor
 				UserController.getInstance().serverUnnavailble(); // Avisa ao controlador que o cliente desconectou
