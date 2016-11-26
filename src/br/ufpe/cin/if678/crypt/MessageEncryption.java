@@ -23,7 +23,7 @@ import javax.crypto.spec.IvParameterSpec;
  *
  * @param <T> T pode ser uma String ou um arquivo
  */
-public class MessegeEncryption {
+public class MessageEncryption {
 
 	private byte[] encryptedMessege;
 	private SecretKey key;
@@ -36,7 +36,7 @@ public class MessegeEncryption {
 	 * @param key contem a chave usada na criptografia
 	 * @param IV contém o IV usado na cruptografia
 	 */
-	public MessegeEncryption(byte[] encryptedMessege, SecretKey key, byte[] IV) {
+	public MessageEncryption(byte[] encryptedMessege, SecretKey key, byte[] IV) {
 		this.key = key;
 		this.encryptedMessege = encryptedMessege;
 		this.IV = IV;
@@ -85,7 +85,7 @@ public class MessegeEncryption {
 	 * @throws IOException
 	 * 
 	 */
-	public static MessegeEncryption encrypt(String message) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+	public static MessageEncryption encrypt(String message) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
 		// Inicia o Cipher para AES
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
 
@@ -105,7 +105,7 @@ public class MessegeEncryption {
 		// Encrypta a menssagem
 		byte[] encripted = cipher.doFinal(((String) message).getBytes("UTF-8"));
 
-		return new MessegeEncryption(encripted, key, IV);
+		return new MessageEncryption(encripted, key, IV);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class MessegeEncryption {
 	 * @throws UnsupportedEncodingException
 	 * 
 	 */
-	public static String decrypt(MessegeEncryption encryptedMessege) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
+	public static String decrypt(MessageEncryption encryptedMessege) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
 		// Inicia o Cipher para modo de decyptação AES
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
 		cipher.init(Cipher.DECRYPT_MODE, encryptedMessege.getKey(), new IvParameterSpec(encryptedMessege.getIV()));
