@@ -1,9 +1,23 @@
 package br.ufpe.cin.if678;
 
+import java.io.Console;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import br.ufpe.cin.if678.communication.UserAction;
+import br.ufpe.cin.if678.communication.Writer;
+import br.ufpe.cin.if678.crypt.MessegeEncryption;
 
 import br.ufpe.cin.if678.business.Group;
 
@@ -38,6 +52,7 @@ public class UserMain {
 			System.out.println("Digite a opção que deseja:");
 			System.out.println("1. Ver lista de usuários online");
 			System.out.println("2. Sair");
+			System.out.println("3. Iniciar chat");
 			int command = in.nextInt();
 
 			switch (command) {
@@ -46,6 +61,31 @@ public class UserMain {
 				break;
 			case 2:
 				break outside;
+			case 3:
+				System.out.print("Digite o login do usuario que deseja conversar:");
+				String user = in.next();
+				System.out.println();
+				System.out.println();
+				System.out.println();
+				
+				System.out.println("Chat iniciado com " + user + ". Para sair envie '.'.");
+				
+				while(true){
+					String messege = in.next();
+					MessegeEncryption encryptedMessege;
+					try {
+						encryptedMessege = MessegeEncryption.encrypt(messege);
+						controller.getWriter().queueAction(UserAction.SEND_MESSEGE, encryptedMessege);
+					} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException
+							| NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
+							| InvalidAlgorithmParameterException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+				}
+				
+				break;
 			}
 		}
 	}
