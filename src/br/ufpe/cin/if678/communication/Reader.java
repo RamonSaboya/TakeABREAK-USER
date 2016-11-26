@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.util.HashMap;
 
 import br.ufpe.cin.if678.UserController;
+import javafx.util.Pair;
 
 /**
  * Gerenciador de leitura de um socket
@@ -20,6 +21,8 @@ public class Reader implements Runnable {
 
 	private Socket socket;
 
+	private ObjectInputStream OIS;
+
 	/**
 	 * Construtor do gerenciador de leitura
 	 * 
@@ -29,6 +32,8 @@ public class Reader implements Runnable {
 		this.controller = UserController.getInstance();
 
 		this.socket = socket;
+
+		this.OIS = null;
 	}
 
 	/**
@@ -38,8 +43,9 @@ public class Reader implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				// Utiliza a inteface de entrada de objetos
-				ObjectInputStream OIS = new ObjectInputStream(socket.getInputStream());
+				if (OIS == null) {
+					OIS = new ObjectInputStream(socket.getInputStream());
+				}
 
 				// Lê a ação e o objecto que esteja relacionado a mesma
 				ServerAction action = (ServerAction) OIS.readObject();
@@ -50,6 +56,10 @@ public class Reader implements Runnable {
 					HashMap<InetSocketAddress, String> userList = (HashMap<InetSocketAddress, String>) object;
 
 					controller.updateUserList(userList);
+				} else if (action == ServerAction.SEND_USER_CONNECTED) {
+					Pair<InetSocketAddress, String> data = (Pair<InetSocketAddress, String>) object;
+
+					controller.userConnected(data); // TODO colocar no listener
 				}
 			} catch (SocketException e) {
 				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor

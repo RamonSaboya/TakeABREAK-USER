@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import br.ufpe.cin.if678.util.Pair;
+import javafx.util.Pair;
 
 /**
  * Gerenciador de escrita de um socket
@@ -89,8 +89,8 @@ public class Writer implements Runnable {
 				}
 
 				// Pega a ação e seu objeto
-				UserAction action = pair.getFirst();
-				Object object = pair.getSecond();
+				UserAction action = pair.getKey();
+				Object object = pair.getValue();
 
 				// Manda os objetos pela stream
 				OOS.writeObject(action);

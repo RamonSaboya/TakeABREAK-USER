@@ -28,11 +28,6 @@ public class UserListener {
 		writer.queueAction(UserAction.REQUEST_USER_LIST, null);
 	}
 	
-	public void onUserListRetrieve(List list) {
-		controller.updateUserList(list);
-		
-	}
-
 	public void sendMessege(String messege){
 		try {
 			
