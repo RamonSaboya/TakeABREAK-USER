@@ -39,6 +39,7 @@ public class Reader implements Runnable {
 	/**
 	 * Método que será executado pela thread
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		while (true) {
@@ -52,7 +53,6 @@ public class Reader implements Runnable {
 				Object object = OIS.readObject();
 
 				if (action == ServerAction.SEND_USER_LIST) {
-					@SuppressWarnings("unchecked")
 					HashMap<InetSocketAddress, String> userList = (HashMap<InetSocketAddress, String>) object;
 
 					controller.updateUserList(userList);
