@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.HashMap;
 
 import br.ufpe.cin.if678.UserController;
-import javafx.util.Pair;
+import br.ufpe.cin.if678.util.Pair;
 
 /**
  * Gerenciador de leitura de um socket

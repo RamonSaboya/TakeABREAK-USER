@@ -9,7 +9,7 @@ import java.util.HashMap;
 import br.ufpe.cin.if678.communication.Reader;
 import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.communication.Writer;
-import javafx.util.Pair;
+import br.ufpe.cin.if678.util.Pair;
 
 /**
  * Controla as threads de leitura e escrita do socket de conexão com o servidor
@@ -77,11 +77,11 @@ public class UserController {
 	}
 
 	public void setUsername(String username) {
-		writerPair.getKey().queueAction(UserAction.SEND_USERNAME, username);
+		writerPair.getFirst().queueAction(UserAction.SEND_USERNAME, username);
 	}
 
 	public void downloadUserList() {
-		writerPair.getKey().queueAction(UserAction.REQUEST_USER_LIST, null);
+		writerPair.getFirst().queueAction(UserAction.REQUEST_USER_LIST, null);
 	}
 
 	public void updateUserList(HashMap<InetSocketAddress, String> userList) {
@@ -95,26 +95,26 @@ public class UserController {
 	}
 
 	public void userConnected(Pair<InetSocketAddress, String> data) {
-		userList.put(data.getKey(), data.getValue());
+		userList.put(data.getFirst(), data.getSecond());
 	}
 
 	/**
 	 * Avisa à thread de leitura que a conexão do socket foi encerrada
 	 */
 	public void serverUnnavailble() {
-		readerPair.getValue().interrupt(); // Interrompe a thread de leitura
+		readerPair.getSecond().interrupt(); // Interrompe a thread de leitura
 											 // (apenas segurança, thread já deve
 											 // estar parada nesse ponto)
-		writerPair.getKey().forceStop();  // Força o encerramento da thread de
+		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
 										  // escrita
 	}
 
 	public Reader getReader() {
-		return readerPair.getKey();
+		return readerPair.getFirst();
 	}
 
 	public Writer getWriter() {
-		return writerPair.getKey();
+		return writerPair.getFirst();
 	}
 
 }
