@@ -1,10 +1,13 @@
 package br.ufpe.cin.if678;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import br.ufpe.cin.if678.communication.Reader;
+import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.communication.Writer;
 import br.ufpe.cin.if678.util.Pair;
 
@@ -14,6 +17,8 @@ import br.ufpe.cin.if678.util.Pair;
  * @author Ramon
  */
 public class UserController {
+
+	public static final int MAIN_PORT = 6666;
 
 	// Como estamos usando uma classe Singleton, precisamos da variável para
 	// salvar a instância
@@ -37,10 +42,16 @@ public class UserController {
 	private Pair<Reader, Thread> readerPair;
 	private Pair<Writer, Thread> writerPair;
 
-	public UserController() {
+	private HashMap<InetSocketAddress, String> userList;
+
+	private UserController() {
+		this.userList = new HashMap<InetSocketAddress, String>();
+	}
+
+	public void initialize(String IP) {
 		try {
 			// Cria o socket no endereço do servidor
-			Socket socket = new Socket("192.168.15.104", 6666);
+			Socket socket = new Socket(IP, MAIN_PORT);
 
 			// Inicia os gerenciadores de leitura e escrita
 			Reader reader = new Reader(socket);
@@ -65,15 +76,33 @@ public class UserController {
 		}
 	}
 
+	public void setUsername(String username) {
+		writerPair.getFirst().queueAction(UserAction.SEND_USERNAME, username);
+	}
+
+	public void downloadUserList() {
+		writerPair.getFirst().queueAction(UserAction.REQUEST_USER_LIST, null);
+	}
+
+	public void updateUserList(HashMap<InetSocketAddress, String> userList) {
+		this.userList = userList;
+
+		System.out.println("Lista de clientes recebida com sucesso");
+	}
+
+	public HashMap<InetSocketAddress, String> getUserList() {
+		return userList;
+	}
+
 	/**
 	 * Avisa à thread de leitura que a conexão do socket foi encerrada
 	 */
 	public void serverUnnavailble() {
 		readerPair.getSecond().interrupt(); // Interrompe a thread de leitura
-											// (apenas segurança, thread já deve
-											// estar parada nesse ponto)
+											 // (apenas segurança, thread já deve
+											 // estar parada nesse ponto)
 		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
-											// escrita
+											  // escrita
 	}
 
 	public Reader getReader() {

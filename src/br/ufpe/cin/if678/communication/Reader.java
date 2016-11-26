@@ -16,6 +16,8 @@ import br.ufpe.cin.if678.UserController;
  */
 public class Reader implements Runnable {
 
+	private UserController controller;
+
 	private Socket socket;
 
 	/**
@@ -24,6 +26,8 @@ public class Reader implements Runnable {
 	 * @param socket instância do socket
 	 */
 	public Reader(Socket socket) {
+		this.controller = UserController.getInstance();
+
 		this.socket = socket;
 	}
 
@@ -40,10 +44,12 @@ public class Reader implements Runnable {
 				// Lê a ação e o objecto que esteja relacionado a mesma
 				ServerAction action = (ServerAction) OIS.readObject();
 				Object object = OIS.readObject();
-				
-				if(action == ServerAction.RETRIEVE_USER_LIST) {
-					HashMap<InetSocketAddress, String> list = (HashMap<InetSocketAddress, String>) object;
-					callEvent(onUserListRetrieve(list));
+
+				if (action == ServerAction.SEND_USER_LIST) {
+					@SuppressWarnings("unchecked")
+					HashMap<InetSocketAddress, String> userList = (HashMap<InetSocketAddress, String>) object;
+
+					controller.updateUserList(userList);
 				}
 			} catch (SocketException e) {
 				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor
