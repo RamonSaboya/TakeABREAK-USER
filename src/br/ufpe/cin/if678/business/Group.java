@@ -47,6 +47,10 @@ public class Group implements Serializable {
 		return founder == address || (members.containsKey(address) && members.get(address));
 	}
 
+	public int getMembersAmount() {
+		return members.size() + 1;
+	}
+
 	public void changeGroupName(String name) {
 		this.name = name;
 	}
