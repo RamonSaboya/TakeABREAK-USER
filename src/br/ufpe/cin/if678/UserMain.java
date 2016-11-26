@@ -58,34 +58,12 @@ public class UserMain {
 			switch (command) {
 			case 1:
 				displayUserList();
+				System.out.print("Digite o login do usuario que deseja conversar:");
+				String user = in.next();
+				startChat(user);
 				break;
 			case 2:
 				break outside;
-			case 3:
-				System.out.print("Digite o login do usuario que deseja conversar:");
-				String user = in.next();
-				System.out.println();
-				System.out.println();
-				System.out.println();
-				
-				System.out.println("Chat iniciado com " + user + ". Para sair envie '.'.");
-				
-				while(true){
-					String messege = in.next();
-					MessegeEncryption encryptedMessege;
-					try {
-						encryptedMessege = MessegeEncryption.encrypt(messege);
-						controller.getWriter().queueAction(UserAction.SEND_MESSEGE, encryptedMessege);
-					} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException
-							| NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
-							| InvalidAlgorithmParameterException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-				}
-				
-				break;
 			}
 		}
 	}
@@ -110,6 +88,29 @@ public class UserMain {
 
 		Group group = controller.getGroup(name);
 		System.out.println(group.getCreationDate().toString());
+	}
+	
+	public static void startChat(String user){
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+		System.out.println("Chat iniciado com " + user);
+		
+		while(true){
+			String messege = in.next();
+			MessegeEncryption encryptedMessege;
+			try {
+				encryptedMessege = MessegeEncryption.encrypt(messege);
+				controller.getWriter().queueAction(UserAction.SEND_MESSEGE, encryptedMessege);
+			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException
+					| NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
+					| InvalidAlgorithmParameterException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 }
