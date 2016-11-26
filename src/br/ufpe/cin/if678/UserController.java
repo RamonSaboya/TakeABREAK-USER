@@ -15,7 +15,8 @@ import br.ufpe.cin.if678.util.Pair;
  */
 public class UserController {
 
-	// Como estamos usando uma classe Singleton, precisamos da variável para salvar a instância
+	// Como estamos usando uma classe Singleton, precisamos da variável para
+	// salvar a instância
 	private static UserController INSTANCE;
 
 	/**
@@ -49,7 +50,8 @@ public class UserController {
 			Thread readerThread = new Thread(reader);
 			Thread writerThread = new Thread(writer);
 
-			// Armazena as instancias dos gerenciadores de leitura e escrita, e suas threads
+			// Armazena as instancias dos gerenciadores de leitura e escrita, e
+			// suas threads
 			this.readerPair = new Pair<Reader, Thread>(reader, readerThread);
 			this.writerPair = new Pair<Writer, Thread>(writer, writerThread);
 
@@ -67,8 +69,19 @@ public class UserController {
 	 * Avisa à thread de leitura que a conexão do socket foi encerrada
 	 */
 	public void serverUnnavailble() {
-		readerPair.getSecond().interrupt(); // Interrompe a thread de leitura (apenas segurança, thread já deve estar parada nesse ponto)
-		writerPair.getFirst().forceStop(); // Força o encerramento da thread de escrita
+		readerPair.getSecond().interrupt(); // Interrompe a thread de leitura
+											// (apenas segurança, thread já deve
+											// estar parada nesse ponto)
+		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
+											// escrita
+	}
+
+	public Reader getReader() {
+		return readerPair.getFirst();
+	}
+
+	public Writer getWriter() {
+		return writerPair.getFirst();
 	}
 
 }

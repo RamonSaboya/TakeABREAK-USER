@@ -72,10 +72,10 @@ public class TakeABREAK extends JFrame {
 		signInPanel = new SignInPanel();
 		profilePanel = new ProfilePanel();
 
-		setCurrent(startupPanel); // Define a página inicial
+		//setCurrent(startupPanel); // Define a página inicial
 		changePassword = new ChangePassword();
 		
-		setCurrent(profilePanel); // Define a página inicial
+		setCurrent(initialPanel); // Define a página inicial
 
 		// Apenas para testes
 		//contentPane.add(homePanel);

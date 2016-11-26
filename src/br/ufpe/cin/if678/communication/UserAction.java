@@ -7,8 +7,10 @@ package br.ufpe.cin.if678.communication;
  */
 public enum UserAction {
 
-	LOGIN(1);
-
+	SEND_USERNAME(0),
+	REQUEST_USER_LIST(1),
+	SEND_MESSEGE(2);
+	
 	private int ID; // ID associado a ação
 
 	/**

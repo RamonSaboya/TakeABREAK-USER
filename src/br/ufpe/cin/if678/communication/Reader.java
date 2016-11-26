@@ -2,8 +2,10 @@ package br.ufpe.cin.if678.communication;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashMap;
 
 import br.ufpe.cin.if678.UserController;
 
@@ -38,6 +40,11 @@ public class Reader implements Runnable {
 				// Lê a ação e o objecto que esteja relacionado a mesma
 				ServerAction action = (ServerAction) OIS.readObject();
 				Object object = OIS.readObject();
+				
+				if(action == ServerAction.RETRIEVE_USER_LIST) {
+					HashMap<InetSocketAddress, String> list = (HashMap<InetSocketAddress, String>) object;
+					callEvent(onUserListRetrieve(list));
+				}
 			} catch (SocketException e) {
 				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor
 				UserController.getInstance().serverUnnavailble(); // Avisa ao controlador que o cliente desconectou
