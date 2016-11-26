@@ -110,7 +110,7 @@ public class UserController {
 	public void requestGroup(String name) {
 		name = userList.get(user) + ":!:" + name;
 
-		writerPair.getFirst().queueAction(UserAction.CREATE_GROUP, new Pair<InetSocketAddress, String>(user, name));
+		writerPair.getFirst().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(user, name));
 	}
 
 	public void loadGroup(Group group) {
