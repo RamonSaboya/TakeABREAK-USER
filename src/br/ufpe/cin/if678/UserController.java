@@ -107,7 +107,7 @@ public class UserController {
 		userList.put(data.getFirst(), data.getSecond());
 	}
 
-	public void requestGroup(String name) {
+	public void groupRequest(String name) {
 		name = userList.get(user) + ":!:" + name;
 
 		writerPair.getFirst().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(user, name));
@@ -123,6 +123,10 @@ public class UserController {
 		while (!groups.containsKey(name));
 
 		return groups.get(name);
+	}
+	
+	public void groupAddUser(Pair<InetSocketAddress, String>user){
+		
 	}
 
 	/**

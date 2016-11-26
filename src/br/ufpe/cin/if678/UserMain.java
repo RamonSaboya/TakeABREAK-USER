@@ -52,7 +52,6 @@ public class UserMain {
 			System.out.println("Digite a opção que deseja:");
 			System.out.println("1. Ver lista de usuários online");
 			System.out.println("2. Sair");
-			System.out.println("3. Iniciar chat");
 			int command = in.nextInt();
 
 			switch (command) {
@@ -84,10 +83,13 @@ public class UserMain {
 		String name = in.next();
 		System.out.println();
 		
-		controller.requestGroup(name);
-
+		System.out.println("Requisitando grupo pra o Servidor...");
+		controller.groupRequest(name);
+		System.out.println("Grupo recebido.");
+		
 		Group group = controller.getGroup(name);
 		System.out.println(group.getCreationDate().toString());
+		
 	}
 	
 	public static void startChat(String user){
@@ -102,7 +104,7 @@ public class UserMain {
 			MessegeEncryption encryptedMessege;
 			try {
 				encryptedMessege = MessegeEncryption.encrypt(messege);
-				controller.getWriter().queueAction(UserAction.SEND_MESSEGE, encryptedMessege);
+				controller.getWriter().queueAction(UserAction.SEND_MESSEGE, new Pair<String, Object>());
 			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException
 					| NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
 					| InvalidAlgorithmParameterException | IOException e) {
