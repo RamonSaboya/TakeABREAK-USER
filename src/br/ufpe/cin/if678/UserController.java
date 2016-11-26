@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.communication.Reader;
 import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.communication.Writer;
@@ -42,16 +43,24 @@ public class UserController {
 	private Pair<Reader, Thread> readerPair;
 	private Pair<Writer, Thread> writerPair;
 
+	private InetSocketAddress user;
+
 	private HashMap<InetSocketAddress, String> userList;
+
+	private HashMap<String, Group> groups;
 
 	private UserController() {
 		this.userList = new HashMap<InetSocketAddress, String>();
+
+		this.groups = new HashMap<String, Group>();
 	}
 
 	public void initialize(String IP) {
 		try {
 			// Cria o socket no endereço do servidor
 			Socket socket = new Socket(IP, MAIN_PORT);
+
+			user = (InetSocketAddress) socket.getLocalSocketAddress();
 
 			// Inicia os gerenciadores de leitura e escrita
 			Reader reader = new Reader(socket);
@@ -98,6 +107,24 @@ public class UserController {
 		userList.put(data.getFirst(), data.getSecond());
 	}
 
+	public void requestGroup(String name) {
+		name = userList.get(user) + ":!:" + name;
+
+		writerPair.getFirst().queueAction(UserAction.CREATE_GROUP, new Pair<InetSocketAddress, String>(user, name));
+	}
+
+	public void loadGroup(Group group) {
+		groups.put(group.getName(), group);
+	}
+
+	public Group getGroup(String name) {
+		name = userList.get(user) + ":!:" + name;
+
+		while (!groups.containsKey(name));
+
+		return groups.get(name);
+	}
+
 	/**
 	 * Avisa à thread de leitura que a conexão do socket foi encerrada
 	 */
@@ -106,7 +133,7 @@ public class UserController {
 											 // (apenas segurança, thread já deve
 											 // estar parada nesse ponto)
 		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
-										  // escrita
+											  // escrita
 	}
 
 	public Reader getReader() {

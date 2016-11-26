@@ -1,4 +1,4 @@
-package br.ufpe.cin.if678.communication;
+  package br.ufpe.cin.if678.communication;
 
 /**
  * Mapa de possíveis ações de comunicação cliente-servidor
@@ -9,8 +9,9 @@ public enum UserAction {
 
 	SEND_USERNAME(0),
 	REQUEST_USER_LIST(1),
-	SEND_MESSEGE(2);
-	
+	SEND_MESSAGE(2),
+	CREATE_GROUP(3);
+
 	private int ID; // ID associado a ação
 
 	/**

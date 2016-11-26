@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.util.HashMap;
 
 import br.ufpe.cin.if678.UserController;
+import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.util.Pair;
 
 /**
@@ -52,14 +53,22 @@ public class Reader implements Runnable {
 				ServerAction action = (ServerAction) OIS.readObject();
 				Object object = OIS.readObject();
 
-				if (action == ServerAction.SEND_USER_LIST) {
+				switch (action) {
+				case SEND_USER_LIST:
 					HashMap<InetSocketAddress, String> userList = (HashMap<InetSocketAddress, String>) object;
 
 					controller.updateUserList(userList);
-				} else if (action == ServerAction.SEND_USER_CONNECTED) {
+					break;
+				case SEND_USER_CONNECTED:
 					Pair<InetSocketAddress, String> data = (Pair<InetSocketAddress, String>) object;
 
 					controller.userConnected(data); // TODO colocar no listener
+					break;
+				case SEND_GROUP:
+					Group group = (Group) object;
+
+					controller.loadGroup(group);
+					break;
 				}
 			} catch (SocketException e) {
 				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor

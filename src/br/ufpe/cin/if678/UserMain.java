@@ -5,14 +5,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import br.ufpe.cin.if678.business.Group;
+
 public class UserMain {
 
 	private static UserController controller;
+	private static Scanner in;
 
 	public static void main(String[] args) {
 		controller = UserController.getInstance();
 
-		Scanner in = new Scanner(System.in);
+		in = new Scanner(System.in);
 
 		System.out.print("Digite o IP do servidor: ");
 		String IP = "192.168.15.104";
@@ -45,8 +48,6 @@ public class UserMain {
 				break outside;
 			}
 		}
-
-		in.close();
 	}
 
 	public static void displayUserList() {
@@ -60,6 +61,15 @@ public class UserMain {
 
 			System.out.println(c++ + " - " + username + " (" + address.getAddress().getHostAddress() + ":" + address.getPort() + ")");
 		}
+		
+		System.out.print("Digite o nick de uma pessoa para conversar: ");
+		String name = in.next();
+		System.out.println();
+		
+		controller.requestGroup(name);
+
+		Group group = controller.getGroup(name);
+		System.out.println(group.getCreationDate().toString());
 	}
 
 }
