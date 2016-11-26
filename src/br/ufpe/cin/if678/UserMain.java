@@ -1,6 +1,5 @@
 package br.ufpe.cin.if678;
 
-import java.io.Console;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.InvalidAlgorithmParameterException;
@@ -15,11 +14,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import br.ufpe.cin.if678.communication.UserAction;
-import br.ufpe.cin.if678.communication.Writer;
-import br.ufpe.cin.if678.crypt.MessegeEncryption;
-
 import br.ufpe.cin.if678.business.Group;
+import br.ufpe.cin.if678.crypt.MessegeEncryption;
 
 public class UserMain {
 
@@ -78,41 +74,40 @@ public class UserMain {
 
 			System.out.println(c++ + " - " + username + " (" + address.getAddress().getHostAddress() + ":" + address.getPort() + ")");
 		}
-		
+
 		System.out.print("Digite o nick de uma pessoa para conversar: ");
 		String name = in.next();
 		System.out.println();
-		
+
 		System.out.println("Requisitando grupo pra o Servidor...");
 		controller.groupRequest(name);
 		System.out.println("Grupo recebido.");
-		
+
 		Group group = controller.getGroup(name);
 		System.out.println(group.getCreationDate().toString());
-		
+
 	}
-	
-	public static void startChat(String user){
+
+	public static void startChat(String user) {
 		System.out.println();
 		System.out.println();
 		System.out.println();
-		
+
 		System.out.println("Chat iniciado com " + user);
-		
-		while(true){
+
+		while (true) {
 			String messege = in.next();
 			MessegeEncryption encryptedMessege;
 			try {
 				encryptedMessege = MessegeEncryption.encrypt(messege);
-				controller.getWriter().queueAction(UserAction.SEND_MESSEGE, new Pair<String, Object>());
-			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException
-					| NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
+				// controller.getWriter().queueAction(UserAction.SEND_MESSAGE, new Pair<String, Object>());
+			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
 					| InvalidAlgorithmParameterException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 }

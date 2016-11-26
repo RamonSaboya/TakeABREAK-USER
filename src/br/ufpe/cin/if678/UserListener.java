@@ -35,7 +35,7 @@ public class UserListener {
 			
 			MessegeEncryption encryptedMessege = MessegeEncryption.encrypt(messege);
 			
-			writer.queueAction(UserAction.SEND_MESSEGE, encryptedMessege);
+			writer.queueAction(UserAction.SEND_MESSAGE, encryptedMessege);
 			
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException
 				| IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException
