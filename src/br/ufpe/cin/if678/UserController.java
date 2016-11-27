@@ -54,6 +54,8 @@ public class UserController {
 	private HashMap<String, Group> groups;
 
 	private UserController() {
+		this.listener = new Listener(this);
+
 		this.addressToName = new HashMap<InetSocketAddress, String>();
 		this.nameToAddress = new HashMap<String, InetSocketAddress>();
 
@@ -139,8 +141,10 @@ public class UserController {
 			listener.onGroupReceive((Group) object);
 			break;
 		case GROUP_ADD_MEMBER:
+			listener.onGroupAddMember((Pair<String, InetSocketAddress>) object);
 			break;
 		case GROUP_MESSAGE:
+			listener.onGroupMessage((Pair<String, Object>) object);
 			break;
 		}
 	}

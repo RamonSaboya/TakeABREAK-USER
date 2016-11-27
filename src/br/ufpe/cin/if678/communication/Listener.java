@@ -33,7 +33,22 @@ public class Listener {
 		controller.getNameToAddress().put(data.getSecond(), data.getFirst());
 	}
 
-	public void onGroupReceive(Group object) {
+	public void onGroupReceive(Group group) {
+		controller.getGroups().put(group.getName(), group);
+	}
+
+	public void onGroupAddMember(Pair<String, InetSocketAddress> data) {
+		String name = data.getFirst();
+		InetSocketAddress user = data.getSecond();
+
+		controller.getGroup(name).addMember(user);
+	}
+
+	public void onGroupMessage(Pair<String, Object> data) {
+		String name = data.getFirst();
+		String message = (String) data.getSecond();
+
+		System.out.println(name + ": " + message);
 	}
 
 }

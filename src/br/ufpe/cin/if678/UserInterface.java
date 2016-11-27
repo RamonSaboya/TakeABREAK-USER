@@ -93,6 +93,32 @@ public class UserInterface {
 		Group group;
 		while ((group = controller.getGroup(groupName)) == null);
 		System.out.println("Grupo recebido");
+
+		System.out.println("Adcionando usuário ao grupo");
+		controller.getWriter().queueAction(UserAction.GROUP_ADD_MEMBER, new Pair<String, InetSocketAddress>(group.getName(), controller.getAddress(name)));
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+
+		System.out.println("Você está em uma conversa com: " + name);
+		System.out.println("Digite suas mensagens e /exit para sair da conversa:");
+
+		String message = in.nextLine();
+		while (!(message = in.nextLine()).equals("/exit")) {
+			controller.getWriter().queueAction(UserAction.SEND_MESSAGE, new Pair<String, String>(group.getName(), message));
+		}
+		
+		System.out.println("Você encerrou a conversa com: " + name);
+		
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		
+		return;
 	}
 
 }
