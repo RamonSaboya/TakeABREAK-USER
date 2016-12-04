@@ -75,11 +75,19 @@ public class UserListPanel extends JPanel {
 				public void actionPerformed(ActionEvent event) {
 					UserController controller = UserController.getInstance();
 
-					String groupName = controller.getName(user.getValue()) + ":!:" + controller.getName(controller.getUser());
+					String person1 = controller.getName(user.getValue());
+					String person2 = controller.getName(controller.getUser());
+					String groupName = person1 + ":!:" + person2;
+					if (person1.compareTo(person2) > 0) {
+						groupName = person2 + ":!:" + person1;
+					}
+
 					controller.getWriter().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(controller.getUser(), groupName));
 					Group group;
 					System.out.println("T1");
-					while ((group = controller.getGroup(groupName)) == null);
+					while ((group = controller.getGroup(groupName)) == null) {
+						System.out.println(groupName);
+					} ;
 					System.out.println("T2");
 					controller.getWriter().queueAction(UserAction.GROUP_ADD_MEMBER, new Pair<String, InetSocketAddress>(group.getName(), user.getValue()));
 
