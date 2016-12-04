@@ -127,6 +127,8 @@ public class ChatPanel extends JPanel {
 		if (groupName.equals(current)) {
 			updateScreen();
 		}
+		
+		frame.getChatListPanel().updateLastMessage(groupName);
 	}
 
 	public void updateScreen() {
@@ -153,4 +155,14 @@ public class ChatPanel extends JPanel {
 
 		scrollPane.setViewportView(panel);
 	}
+
+	public String getLastMessage(String groupName) {
+		if (!messages.containsKey(groupName) || messages.get(groupName).isEmpty()) {
+			return "";
+		}
+
+		DisplayMessage message = messages.get(groupName).get(messages.get(groupName).size() - 1);
+		return "  " + message.getSenderName() + ": " + message.getMessage();
+	}
+
 }
