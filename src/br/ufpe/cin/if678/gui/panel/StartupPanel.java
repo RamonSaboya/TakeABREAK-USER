@@ -2,12 +2,16 @@ package br.ufpe.cin.if678.gui.panel;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
+import br.ufpe.cin.if678.UserController;
+import br.ufpe.cin.if678.gui.BreakButton;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 
 @SuppressWarnings("serial")
@@ -15,19 +19,19 @@ public class StartupPanel extends JPanel {
 
 	private JLabel smallText;
 	private JLabel bigText;
-
-	private JButton loginButton;
-	private JButton registerButton;
-
 	private JLabel logoLabel;
+
+	private JLabel addressLabel;
+	private JTextField addressField;
+	private BreakButton connectButton;
 
 	/**
 	 * Cria o painel de entrada.
 	 */
-	public StartupPanel() {
+	public StartupPanel(TakeABREAK frame) {
 		super();
 
-		// Seta as características do painel
+		// Seta as caracterÃ­sticas do painel
 		setBounds(0, 0, 1200, 700);
 		setBackground(TakeABREAK.BACKGROUND_COLOR);
 		setLayout(null);
@@ -47,23 +51,38 @@ public class StartupPanel extends JPanel {
 		bigText.setText("BREAK;");
 		bigText.setBounds(50, 200, 750, 300);
 
-		// Botão de login
-		loginButton = new JButton("SIGN IN");
-		loginButton.setBounds(925, 50, 100, 25);
-
-		// Botão de logout
-		registerButton = new JButton("SIGN UP");
-		registerButton.setBounds(1050, 50, 100, 25);
-
 		// Logo
 		logoLabel = new JLabel(new ImageIcon("dependencies\\logo.jpg"));
 		logoLabel.setBounds(800, 175, 350, 350);
 
+		addressLabel = new JLabel("DIgite o IP do servidor:");
+		addressLabel.setBounds(566, 63, 120, 14);
+
+		addressField = new JTextField();
+		addressField.setBounds(538, 88, 167, 20);
+		addressField.setColumns(10);
+		addressField.setText("192.168.15.104");
+
+		connectButton = new BreakButton("Conectar", 576, 119, 89, 23);
+		connectButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (UserController.getInstance().initialize(addressField.getText())) {
+					frame.clearFrame();
+					frame.addPanel(frame.getAuthenticationPanel());
+				} else {
+					addressField.setText("SE FUDEU");
+				}
+			}
+		});
+
 		// Insere todos os elementos no painel
 		add(smallText);
 		add(bigText);
-		add(loginButton);
-		add(registerButton);
 		add(logoLabel);
+
+		add(addressLabel);
+		add(addressField);
+		add(connectButton);
 	}
 }

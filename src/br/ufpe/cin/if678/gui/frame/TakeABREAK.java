@@ -7,27 +7,41 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import br.ufpe.cin.if678.gui.panel.AuthenticationPanel;
 import br.ufpe.cin.if678.gui.panel.ChangePassword;
-import br.ufpe.cin.if678.gui.panel.HomePanel;
-import br.ufpe.cin.if678.gui.panel.InitialPanel;
+import br.ufpe.cin.if678.gui.panel.ChatListPanel;
+import br.ufpe.cin.if678.gui.panel.ChatPanel;
 import br.ufpe.cin.if678.gui.panel.ProfilePanel;
+import br.ufpe.cin.if678.gui.panel.SidebarPanel;
 import br.ufpe.cin.if678.gui.panel.SignInPanel;
 import br.ufpe.cin.if678.gui.panel.StartupPanel;
-import br.ufpe.cin.if678.gui.panel.UserPanel;
+import br.ufpe.cin.if678.gui.panel.UserListPanel;
 
 @SuppressWarnings("serial")
 public class TakeABREAK extends JFrame {
 
-	public static final int BORDER_THICKNESS = 1;
 	public static final Color BACKGROUND_COLOR = new Color(102, 255, 204);
 
+	private static TakeABREAK INSTANCE;
+
+	public static TakeABREAK getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new TakeABREAK();
+		}
+
+		return INSTANCE;
+	}
+
 	private JPanel contentPane;
-	
-	private ChangePassword changePassword; //hey
+
 	private StartupPanel startupPanel;
-	private InitialPanel initialPanel;
-	private UserPanel userPanel;
-	private HomePanel homePanel;
+	private AuthenticationPanel authenticationPanel;
+	private SidebarPanel sidebarPanel;
+	private UserListPanel userListPanel;
+	private ChatListPanel chatListPanel;
+	private ChatPanel chatPanel;
+
+	private ChangePassword changePassword; // hey
 	private SignInPanel signInPanel;
 	private ProfilePanel profilePanel;
 
@@ -38,7 +52,7 @@ public class TakeABREAK extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TakeABREAK frame = new TakeABREAK();
+					TakeABREAK frame = getInstance();
 					frame.setLocationRelativeTo(null); // Centraliza a frame na tela, de acordo com a resolução
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -51,7 +65,7 @@ public class TakeABREAK extends JFrame {
 	/**
 	 * Cria a frame da GUI
 	 */
-	public TakeABREAK() {
+	private TakeABREAK() {
 		// Seta as características da janela
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,23 +79,32 @@ public class TakeABREAK extends JFrame {
 		setContentPane(contentPane);
 
 		// Inicia as páginas do aplicativo
-		startupPanel = new StartupPanel();
-		initialPanel = new InitialPanel();
-		userPanel = new UserPanel();
-		homePanel = new HomePanel();
+		startupPanel = new StartupPanel(this);
+		authenticationPanel = new AuthenticationPanel(this);
+
 		signInPanel = new SignInPanel();
 		profilePanel = new ProfilePanel();
 
-		//setCurrent(startupPanel); // Define a página inicial
+		// setCurrent(startupPanel); // Define a página inicial
 		changePassword = new ChangePassword();
-		
-		setCurrent(initialPanel); // Define a página inicial
+
+		clearFrame();
+		addPanel(startupPanel); // Define a página inicial
 
 		// Apenas para testes
-		//contentPane.add(homePanel);
-		//contentPane.add(initialPanel);
-		//contentPane.repaint();
-		//contentPane.revalidate();
+		// contentPane.add(homePanel);
+		// contentPane.add(initialPanel);
+		// contentPane.repaint();
+		// contentPane.revalidate();
+	}
+
+	/**
+	 * Remove todos os paineis em display e revalida a frame
+	 */
+	public void clearFrame() {
+		contentPane.removeAll();
+		contentPane.repaint();
+		contentPane.revalidate();
 	}
 
 	/**
@@ -89,16 +112,38 @@ public class TakeABREAK extends JFrame {
 	 * 
 	 * @param panel Painel que será mostrado na frame
 	 */
-	public void setCurrent(JPanel panel) {
-		// Remove todos os paineis em display e revalida a frame
-		contentPane.removeAll();
-		contentPane.repaint();
-		contentPane.revalidate();
-
+	public void addPanel(JPanel panel) {
 		// Adciona os paineis e revalida a frame
 		contentPane.add(panel);
 		contentPane.repaint();
 		contentPane.revalidate();
+	}
+
+	public void initializePanels() {
+		sidebarPanel = new SidebarPanel(this);
+		userListPanel = new UserListPanel(this);
+		chatListPanel = new ChatListPanel(this);
+		chatPanel = new ChatPanel(this);
+	}
+
+	public AuthenticationPanel getAuthenticationPanel() {
+		return authenticationPanel;
+	}
+
+	public SidebarPanel getSidebarPanel() {
+		return sidebarPanel;
+	}
+
+	public UserListPanel getUserListPanel() {
+		return userListPanel;
+	}
+
+	public ChatListPanel getChatListPanel() {
+		return chatListPanel;
+	}
+
+	public ChatPanel getChatPanel() {
+		return chatPanel;
 	}
 
 }

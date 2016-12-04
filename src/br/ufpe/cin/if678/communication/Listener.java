@@ -6,7 +6,9 @@ import java.util.Map;
 
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
+import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.util.Pair;
+import br.ufpe.cin.if678.util.Tuple;
 
 public class Listener {
 
@@ -25,16 +27,20 @@ public class Listener {
 			controller.getNameToAddress().put(entry.getValue(), entry.getKey());
 		}
 
-		System.out.println("Lista de clientes recebida com sucesso");
+		TakeABREAK.getInstance().getUserListPanel().updateUsers();
 	}
 
 	public void onUserConnect(Pair<InetSocketAddress, String> data) {
 		controller.getAddressToName().put(data.getFirst(), data.getSecond());
 		controller.getNameToAddress().put(data.getSecond(), data.getFirst());
+
+		TakeABREAK.getInstance().getUserListPanel().updateUsers();
 	}
 
 	public void onGroupReceive(Group group) {
 		controller.getGroups().put(group.getName(), group);
+
+		TakeABREAK.getInstance().getChatListPanel().updateChatList();
 	}
 
 	public void onGroupAddMember(Pair<String, InetSocketAddress> data) {
@@ -42,13 +48,20 @@ public class Listener {
 		InetSocketAddress user = data.getSecond();
 
 		controller.getGroup(name).addMember(user);
+
+		TakeABREAK.getInstance().getChatListPanel().updateChatList();
 	}
 
-	public void onGroupMessage(Pair<String, Object> data) {
-		String name = data.getFirst();
-		String message = (String) data.getSecond();
+	public void onGroupMessage(Tuple<String, InetSocketAddress, Object> data) {
+		String groupName = data.getFirst();
+		InetSocketAddress sender = data.getSecond();
+		String message = (String) data.getThird();
 
-		System.out.println(name + ": " + message);
+		if (controller.getGroup(groupName) == null) {
+			controller.getWriter().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(UserController.getInstance().getUser(), groupName));
+		}
+
+		TakeABREAK.getInstance().getChatPanel().receiveMessage(groupName, sender, message);
 	}
 
 }

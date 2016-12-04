@@ -1,5 +1,8 @@
 package br.ufpe.cin.if678;
 
+import static br.ufpe.cin.if678.communication.UserAction.REQUEST_USER_LIST;
+import static br.ufpe.cin.if678.communication.UserAction.SEND_USERNAME;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -12,6 +15,7 @@ import br.ufpe.cin.if678.communication.Reader;
 import br.ufpe.cin.if678.communication.ServerAction;
 import br.ufpe.cin.if678.communication.Writer;
 import br.ufpe.cin.if678.util.Pair;
+import br.ufpe.cin.if678.util.Tuple;
 
 /**
  * Controla as threads de leitura e escrita do socket de conexão com o servidor
@@ -62,7 +66,7 @@ public class UserController {
 		this.groups = new HashMap<String, Group>();
 	}
 
-	public void initialize(String IP) {
+	public boolean initialize(String IP) {
 		try {
 			// Cria o socket no endereço do servidor
 			Socket socket = new Socket(IP, MAIN_PORT);
@@ -85,11 +89,24 @@ public class UserController {
 			// Inicia a exeucão das threads de leitura e escrita
 			readerThread.start();
 			writerThread.start();
+
+			return true;
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return false;
+	}
+
+	public void setUsername(String username) {
+		getWriter().queueAction(SEND_USERNAME, username);
+
+		addressToName.put(user, username);
+		nameToAddress.put(username, user);
+
+		getWriter().queueAction(REQUEST_USER_LIST, null);
 	}
 
 	public Reader getReader() {
@@ -144,7 +161,7 @@ public class UserController {
 			listener.onGroupAddMember((Pair<String, InetSocketAddress>) object);
 			break;
 		case GROUP_MESSAGE:
-			listener.onGroupMessage((Pair<String, Object>) object);
+			listener.onGroupMessage((Tuple<String, InetSocketAddress, Object>) object);
 			break;
 		}
 	}
