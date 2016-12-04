@@ -61,7 +61,7 @@ public class StartupPanel extends JPanel {
 		addressField = new JTextField();
 		addressField.setBounds(538, 88, 167, 20);
 		addressField.setColumns(10);
-		addressField.setText("192.168.15.104");
+		addressField.setText("25.0.85.228");
 
 		connectButton = new BreakButton("Conectar", 576, 119, 89, 23);
 		connectButton.addActionListener(new ActionListener() {
