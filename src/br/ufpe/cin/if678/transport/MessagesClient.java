@@ -12,13 +12,13 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import br.ufpe.cin.if678.crypt.MessageEncryption;
+import br.ufpe.cin.if678.crypt.Methods;
 
 public class MessagesClient implements Runnable{
 
 	private Socket socket;
 	private Scanner in;
-	private MessageEncryption encrypted;
+	private byte[] encrypted;
 	
 	
 	public MessagesClient(Socket socket){
@@ -35,7 +35,7 @@ public class MessagesClient implements Runnable{
 				stop = false;
 			} else {
 					try {
-						encrypted = MessageEncryption.encrypt(message);
+						encrypted = Methods.encrypt(message);
 						
 					} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
 							| InvalidAlgorithmParameterException | IOException e) {

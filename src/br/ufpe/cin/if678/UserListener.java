@@ -12,7 +12,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.communication.Writer;
-import br.ufpe.cin.if678.crypt.MessageEncryption;
+import br.ufpe.cin.if678.crypt.Methods;
 
 public class UserListener {
 
@@ -33,7 +33,7 @@ public class UserListener {
 			
 			Writer writer = controller.getWriter();
 			
-			MessageEncryption encryptedMessege = MessageEncryption.encrypt(messege);
+			byte[] encryptedMessege = Methods.encrypt(messege);
 			
 			writer.queueAction(UserAction.SEND_MESSAGE, encryptedMessege);
 			

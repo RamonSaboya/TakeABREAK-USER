@@ -10,15 +10,15 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import br.ufpe.cin.if678.util.Pair;
 
 /**
  * Metodos usados para criptogrfar e descriptografar mensagens e arquivos
@@ -42,34 +42,31 @@ public class Methods {
 	 * @throws IOException
 	 * 
 	 */
-	public static MessegeEncryption encrypt(String message) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+	
+	// Strings usadas para gerar IV e chave de criptografia
+	private static String IV = "masi129fapwQMV0W";
+	private static String encryptKey = "Qlaj92kKSKAPlskq";
+	
+	public static byte[] encrypt(String message) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
 		// Inicia o Cipher para AES
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
 
-		// Gera o IV
-		SecureRandom secureRandom = new SecureRandom();
-		byte[] IV = new byte[cipher.getBlockSize()];
-		secureRandom.nextBytes(IV);
-
-		// Gera a Key
-		KeyGenerator encriptKey = KeyGenerator.getInstance("AES");
-		encriptKey.init(128);
-		SecretKey key = encriptKey.generateKey();
-
+		SecretKeySpec key = new SecretKeySpec(encryptKey.getBytes("UTF-8"), "AES");
+		
 		// Inicia o Cipher para modo de encriptação
-		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(IV));
+		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(IV.getBytes()));
 
 		// Encrypta a menssagem
-		byte[] encripted = cipher.doFinal(((String) message).getBytes("UTF-8"));
+		byte[] encrypted = cipher.doFinal(((String) message).getBytes("UTF-8"));
 
-		return new MessegeEncryption(encripted, key, IV);
+		return encrypted;
 	}
 
 	/**
-	 * Recebe um objeto MessegeEncrypted e retorna uma String com a mensagem decriptada
+	 * Recebe um objeto array de bytes e retorna uma String com a mensagem decriptada
 	 * 
 	 * @param encryptedMessege
-	 * @return decryptedMessege
+	 * @return String descriptografada
 	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException
@@ -80,20 +77,19 @@ public class Methods {
 	 * @throws UnsupportedEncodingException
 	 * 
 	 */
-	public static String decrypt(MessegeEncryption encryptedMessege) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
+	public static String decrypt(byte[] encryptedMessege) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
 		// Inicia o Cipher para modo de decyptação AES
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
-		cipher.init(Cipher.DECRYPT_MODE, encryptedMessege.getKey(), new IvParameterSpec(encryptedMessege.getIV()));
+		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encryptKey.getBytes("UTF-8"), "AES"), new IvParameterSpec(IV.getBytes()));
 
 		// Retorna a mensagem decriptografada
-		return new String(cipher.doFinal(encryptedMessege.getEncryptedMessege()), "UTF-8");
+		return new String(cipher.doFinal(encryptedMessege), "UTF-8");
 	}
 
 	/**
-	 * Criptografa o arquivo de entrada, devolve o tipo FileEncryption que contém o arquivo e o nome do arquivo criptografados, a key e IV usados para criptografá-los
-	 * 
+	 * Criptografa o arquivo de entrada, devolve um Par de array de bytes, contendo o arquivo e o nome dele, criptografados, respectivamente * 
 	 * @param file arquivo que será criptografado
-	 * @return objeto que contém o arquivo e o nome do arquivo criptografados, a key e IV usados na criptografia
+	 * @return Pair contendo arquivo criptografado, e nome do arquivo criptografado, respectivamente.
 	 * @throws IllegalBlockSizeException
 	 * @throws BadPaddingException
 	 * @throws IOException
@@ -103,22 +99,13 @@ public class Methods {
 	 * @throws InvalidKeyException
 	 * @throws InvalidAlgorithmParameterException
 	 */
-	public static FileEncryption encrypt(File file) throws IllegalBlockSizeException, BadPaddingException, IOException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Pair<byte[], byte[]> encrypt(File file) throws IllegalBlockSizeException, BadPaddingException, IOException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
 		// Inicia Cipher para a criptografia AES
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
 
-		// Gera um IV aleatório
-		SecureRandom secureRandom = new SecureRandom();
-		byte[] IV = new byte[cipher.getBlockSize()];
-		secureRandom.nextBytes(IV);
-
-		// Gera uma chave secreta aleatórioa
-		KeyGenerator encriptKey = KeyGenerator.getInstance("AES");
-		encriptKey.init(128);
-		SecretKey key = encriptKey.generateKey();
-
 		// Inicia cipher para o medo de encriptação, com a SecretKey e IV gerados
-		cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(IV));
+		cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptKey.getBytes("UTF-8"), "AES"), new IvParameterSpec(IV.getBytes()));
 
 		// Encripta o arquivo, a partir do array de bytes
 		byte[] encryptedFile = cipher.doFinal(Files.readAllBytes(file.toPath()));
@@ -127,7 +114,7 @@ public class Methods {
 		byte[] fileName = file.getName().getBytes();
 		byte[] encryptedFileName = cipher.doFinal(fileName);
 
-		return new FileEncryption(encryptedFileName, encryptedFile, key, IV);
+		return new Pair(encryptedFile, encryptedFileName);
 	}
 
 	/**
@@ -143,16 +130,16 @@ public class Methods {
 	 * @throws NoSuchPaddingException
 	 * @throws IOException
 	 */
-	public static void decrypt(FileEncryption encryptedFile) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IOException {
+	public static void decrypt(@SuppressWarnings("rawtypes") Pair encryptedFile) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, IOException {
 		// Inicia cipher para o modo AES, de decriptação, com a SecretKey e IV do FileEncryption recebido
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
-		cipher.init(Cipher.DECRYPT_MODE, encryptedFile.getKey(), new IvParameterSpec(encryptedFile.getIV()));
+		cipher.init(Cipher.DECRYPT_MODE,new SecretKeySpec(encryptKey.getBytes("UTF-8"), "AES"), new IvParameterSpec(IV.getBytes()));
 
 		// Decripta o arquivo
-		byte[] decryptedFile = cipher.doFinal(encryptedFile.getFile());
+		byte[] decryptedFile = cipher.doFinal((byte[]) encryptedFile.getFirst());
 
 		// Decripta o nome do arquivo
-		String decryptedFileName = new String (cipher.doFinal(encryptedFile.getFileName()), "UTF-8");
+		String decryptedFileName = new String (cipher.doFinal((byte[]) encryptedFile.getSecond()), "UTF-8");
 		
 		// Escreve o arquivo no Path definido.
 		Path writePath = Paths.get("" + decryptedFileName);
