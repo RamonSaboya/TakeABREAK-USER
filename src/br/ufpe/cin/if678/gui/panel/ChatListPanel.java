@@ -25,6 +25,7 @@ public class ChatListPanel extends JPanel {
 	private TakeABREAK frame;
 
 	private List<JComponent> components;
+	private HashMap<String, JLabel> messageLabels;
 
 	/**
 	 * Cria o painel lateral do usuário.
@@ -34,6 +35,7 @@ public class ChatListPanel extends JPanel {
 
 		this.frame = frame;
 		this.components = new ArrayList<JComponent>();
+		this.messageLabels = new HashMap<String, JLabel>();
 
 		// Seta as características do painel
 		setBounds(0, 125, 300, 575);
@@ -61,6 +63,7 @@ public class ChatListPanel extends JPanel {
 
 		JSeparator separator;
 		JLabel groupLabel;
+		JLabel messageLabel;
 		JButton overlayButton;
 		for (Map.Entry<String, Group> group : groups.entrySet()) {
 			String username = UserController.getInstance().getName(UserController.getInstance().getUser());
@@ -86,6 +89,10 @@ public class ChatListPanel extends JPanel {
 			groupLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			groupLabel.setBounds(0, y + 5, 300, 20);
 
+			messageLabel = new JLabel(frame.getChatPanel().getLastMessage(group.getKey()));
+			messageLabel.setBounds(0, y + 25, 300, 20);
+			messageLabels.put(group.getKey(), messageLabel);
+
 			separator = new JSeparator(SwingConstants.HORIZONTAL);
 			separator.setBounds(25, y + 49, 250, 1);
 			separator.setForeground(Color.BLACK);
@@ -95,13 +102,21 @@ public class ChatListPanel extends JPanel {
 
 			add(overlayButton);
 			add(groupLabel);
+			add(messageLabel);
 			add(separator);
 			components.add(overlayButton);
 			components.add(groupLabel);
+			components.add(messageLabel);
 			components.add(separator);
 
 			repaint();
 			revalidate();
+		}
+	}
+
+	public void updateLastMessage(String groupName) {
+		if (messageLabels.containsKey(groupName)) {
+			messageLabels.get(groupName).setText(frame.getChatPanel().getLastMessage(groupName));
 		}
 	}
 

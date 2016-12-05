@@ -40,6 +40,8 @@ public class Listener {
 	public void onGroupReceive(Group group) {
 		controller.getGroups().put(group.getName(), group);
 
+		TakeABREAK.getInstance().notifyGroup(group.getName());
+
 		TakeABREAK.getInstance().getChatListPanel().updateChatList();
 	}
 
