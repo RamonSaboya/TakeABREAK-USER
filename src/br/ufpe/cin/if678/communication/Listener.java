@@ -1,9 +1,19 @@
 package br.ufpe.cin.if678.communication;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import br.ufpe.cin.if678.Encryption;
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
@@ -57,7 +67,15 @@ public class Listener {
 	public void onGroupMessage(Tuple<String, InetSocketAddress, Object> data) {
 		String groupName = data.getFirst();
 		InetSocketAddress sender = data.getSecond();
-		String message = (String) data.getThird();
+		byte[] encryted = (byte[]) data.getThird();
+
+		String message = "";
+		try {
+			message = Encryption.decryptMessage(sender.getPort(), encryted);
+		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
+				| InvalidAlgorithmParameterException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 
 		if (controller.getGroup(groupName) == null) {
 			controller.getWriter().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(UserController.getInstance().getUser(), groupName));

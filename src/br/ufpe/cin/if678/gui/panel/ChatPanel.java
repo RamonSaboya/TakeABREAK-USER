@@ -2,16 +2,26 @@ package br.ufpe.cin.if678.gui.panel;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -23,6 +33,7 @@ import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import br.ufpe.cin.if678.Encryption;
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.gui.DisplayMessage;
@@ -91,11 +102,14 @@ public class ChatPanel extends JPanel {
 		JTextField textField = new JTextField("Digite uma mensagem...");
 		textField.setForeground(Color.GRAY);
 		textField.setBounds(5, 640, 795, 50);
+		textField.setMargin(new Insets(0, 10, 0, 10));
 		textField.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				textField.setText("");
-				textField.setForeground(Color.BLACK);
+				if (textField.getText().equals("Digite uma mensagem...")) {
+					textField.setCaretPosition(0);
+				}
 			}
+
 		});
 
 		JButton sendButton = new JButton("Enviar");
@@ -103,7 +117,21 @@ public class ChatPanel extends JPanel {
 		sendButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				UserController.getInstance().getWriter().queueAction(UserAction.SEND_MESSAGE, new Pair<String, String>(groupName, textField.getText()));
+				if (textField.getText().equals("Digite uma mensagem...") || textField.getText().equals("")) {
+					textField.grabFocus();
+					textField.setForeground(Color.GRAY);
+					textField.setText("Digite uma mensagem...");
+					textField.setCaretPosition(0);
+					return;
+				}
+
+				try {
+					byte[] encrypted = Encryption.encryptMessage(UserController.getInstance().getUser().getPort(), textField.getText());
+					UserController.getInstance().getWriter().queueAction(UserAction.SEND_MESSAGE, new Pair<String, byte[]>(groupName, encrypted));
+				} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
+						| InvalidAlgorithmParameterException | IOException e1) {
+					e1.printStackTrace();
+				}
 				textField.setText("Digite uma mensagem...");
 				textField.setForeground(Color.GRAY);
 				textField.setBounds(5, 640, 795, 50);
@@ -113,6 +141,28 @@ public class ChatPanel extends JPanel {
 						textField.setForeground(Color.BLACK);
 					}
 				});
+			}
+		});
+
+		textField.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+					sendButton.doClick();
+				} else if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE && textField.getText().equals("")) {
+					textField.setForeground(Color.GRAY);
+					textField.setText("Digite uma mensagem...");
+					textField.setCaretPosition(0);
+				}
+				if (textField.getText().equals("Digite uma mensagem...")) {
+					textField.setText("");
+					textField.setForeground(Color.BLACK);
+				}
+			}
+
+			public void keyReleased(KeyEvent event) {
+			}
+
+			public void keyTyped(KeyEvent event) {
 			}
 		});
 

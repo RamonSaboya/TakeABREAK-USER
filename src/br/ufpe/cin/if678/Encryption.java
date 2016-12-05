@@ -30,7 +30,7 @@ public class Encryption {
 	
 	// Strings usadas para gerar IV e chave de criptografia
 	private static String IV = "masi129fapwQMV0W";
-	private static String encryptKey = "Qlaj92kKSK";
+	private static String encryptKey = "Qlaj92kKSKw";
 
 	/**
 	 * Criptografa uma mensagem, usando a chave de criptografia concatenada com o ID do usuário que enviou
