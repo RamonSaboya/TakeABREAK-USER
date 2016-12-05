@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.gui.Test;
 import br.ufpe.cin.if678.gui.panel.AuthenticationPanel;
 import br.ufpe.cin.if678.gui.panel.ChatListPanel;
@@ -140,9 +141,11 @@ public class TakeABREAK extends JFrame {
 	}
 
 	public void setDisconnected() {
-		add(disconnectedPanel);
-		repaint();
-		revalidate();
+		clearFrame();
+
+		addPanel(disconnectedPanel);
+
+		UserController.getInstance().tryReconnect();
 	}
 
 	public AuthenticationPanel getAuthenticationPanel() {

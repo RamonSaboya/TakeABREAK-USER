@@ -45,6 +45,8 @@ public class UserController {
 		return INSTANCE;
 	}
 
+	private String IP;
+
 	// Threads de leitura e escrita
 	private Pair<Reader, Thread> readerPair;
 	private Pair<Writer, Thread> writerPair;
@@ -68,6 +70,8 @@ public class UserController {
 	}
 
 	public boolean initialize(String IP) {
+		this.IP = IP;
+
 		try {
 			// Cria o socket no endereço do servidor
 			Socket socket = new Socket(IP, MAIN_PORT);
@@ -108,6 +112,10 @@ public class UserController {
 		nameToAddress.put(username, user);
 
 		getWriter().queueAction(REQUEST_USER_LIST, null);
+	}
+
+	public String getIP() {
+		return IP;
 	}
 
 	public Reader getReader() {
@@ -178,6 +186,10 @@ public class UserController {
 											  // escrita
 
 		TakeABREAK.getInstance().setDisconnected();
+	}
+
+	public void tryReconnect() {
+
 	}
 
 }
