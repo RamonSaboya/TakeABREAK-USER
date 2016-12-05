@@ -28,11 +28,11 @@ public class MessagesClient implements Runnable{
 	@Override
 	public void run() {
 		in = new Scanner(System.in);
-		boolean stop = true;
-		while(stop){
+		boolean stop = false;
+		while(!stop){
 			String message = in.nextLine();
 			if(message.equals("/exit")){
-				stop = false;
+				stop = true;
 			} else {
 					try {
 						encrypted = Methods.encrypt(message);
