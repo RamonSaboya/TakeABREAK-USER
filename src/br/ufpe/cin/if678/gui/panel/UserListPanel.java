@@ -19,6 +19,7 @@ import javax.swing.SwingConstants;
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.communication.UserAction;
+import br.ufpe.cin.if678.gui.Test;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.util.Pair;
 
@@ -70,29 +71,9 @@ public class UserListPanel extends JPanel {
 			overlayButton = new JButton();
 			overlayButton.setBounds(0, y, 300, 50);
 			overlayButton.setContentAreaFilled(false);
-			overlayButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					UserController controller = UserController.getInstance();
-
-					String person1 = controller.getName(user.getValue());
-					String person2 = controller.getName(controller.getUser());
-					String groupName = person1 + ":!:" + person2;
-					if (person1.compareTo(person2) > 0) {
-						groupName = person2 + ":!:" + person1;
-					}
-
-					controller.getWriter().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(controller.getUser(), groupName));
-					Group group;
-					while ((group = controller.getGroup(groupName)) == null);
-					controller.getWriter().queueAction(UserAction.GROUP_ADD_MEMBER, new Pair<String, InetSocketAddress>(group.getName(), user.getValue()));
-
-					frame.clearFrame();
-					frame.addPanel(frame.getSidebarPanel());
-					frame.addPanel(frame.getChatListPanel());
-					frame.addPanel(frame.getChatPanel());
-				}
-			});
+			
+			Test overlayButtonThread = new Test(frame, user);
+			overlayButton.addActionListener(overlayButtonThread);
 
 			usernameLabel = new JLabel(user.getKey());
 			usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);

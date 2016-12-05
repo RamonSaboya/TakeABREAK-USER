@@ -2,11 +2,13 @@ package br.ufpe.cin.if678.gui.frame;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import br.ufpe.cin.if678.gui.Test;
 import br.ufpe.cin.if678.gui.panel.AuthenticationPanel;
 import br.ufpe.cin.if678.gui.panel.ChangePassword;
 import br.ufpe.cin.if678.gui.panel.ChatListPanel;
@@ -45,6 +47,8 @@ public class TakeABREAK extends JFrame {
 	private SignInPanel signInPanel;
 	private ProfilePanel profilePanel;
 
+	private HashMap<String, Test> waiting;
+
 	/**
 	 * Inicia a aplicação da GUI
 	 */
@@ -74,19 +78,15 @@ public class TakeABREAK extends JFrame {
 		setTitle("Take a BREAK;");
 
 		// Inicia a contentPane (container principal)
-		contentPane = new JPanel();
-		contentPane.setLayout(null);
+		this.contentPane = new JPanel();
+		this.contentPane.setLayout(null);
 		setContentPane(contentPane);
 
 		// Inicia as páginas do aplicativo
-		startupPanel = new StartupPanel(this);
-		authenticationPanel = new AuthenticationPanel(this);
+		this.startupPanel = new StartupPanel(this);
+		this.authenticationPanel = new AuthenticationPanel(this);
 
-		signInPanel = new SignInPanel();
-		profilePanel = new ProfilePanel();
-
-		// setCurrent(startupPanel); // Define a página inicial
-		changePassword = new ChangePassword();
+		this.waiting = new HashMap<String, Test>();
 
 		clearFrame();
 		addPanel(startupPanel); // Define a página inicial
@@ -124,6 +124,21 @@ public class TakeABREAK extends JFrame {
 		userListPanel = new UserListPanel(this);
 		chatListPanel = new ChatListPanel(this);
 		chatPanel = new ChatPanel(this);
+	}
+
+	public void waitGroup(String groupName, Test thread) {
+		waiting.put(groupName, thread);
+	}
+
+	public void notifyGroup(String groupName) {
+		if (!waiting.containsKey(groupName)) {
+			return;
+		}
+
+		Thread thread = waiting.get(groupName);
+		synchronized (thread) {
+			thread.notify();
+		}
 	}
 
 	public AuthenticationPanel getAuthenticationPanel() {
