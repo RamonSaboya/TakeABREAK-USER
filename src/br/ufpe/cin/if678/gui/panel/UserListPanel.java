@@ -84,11 +84,7 @@ public class UserListPanel extends JPanel {
 
 					controller.getWriter().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(controller.getUser(), groupName));
 					Group group;
-					System.out.println("T1");
-					while ((group = controller.getGroup(groupName)) == null) {
-						System.out.println(groupName);
-					} ;
-					System.out.println("T2");
+					while ((group = controller.getGroup(groupName)) == null);
 					controller.getWriter().queueAction(UserAction.GROUP_ADD_MEMBER, new Pair<String, InetSocketAddress>(group.getName(), user.getValue()));
 
 					frame.clearFrame();

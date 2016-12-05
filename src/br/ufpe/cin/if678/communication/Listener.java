@@ -60,7 +60,7 @@ public class Listener {
 		if (controller.getGroup(groupName) == null) {
 			controller.getWriter().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(UserController.getInstance().getUser(), groupName));
 		}
-
+		
 		TakeABREAK.getInstance().getChatPanel().receiveMessage(groupName, sender, message);
 	}
 
