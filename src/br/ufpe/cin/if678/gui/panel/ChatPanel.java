@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +88,14 @@ public class ChatPanel extends JPanel {
 		revalidate();
 
 		JTextField textField = new JTextField("Digite uma mensagem...");
+		textField.setForeground(Color.GRAY);
 		textField.setBounds(5, 640, 795, 50);
+		textField.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				textField.setText("");
+				textField.setForeground(Color.BLACK);
+			}
+		});
 
 		JButton sendButton = new JButton("Enviar");
 		sendButton.setBounds(795, 640, 95, 50);
@@ -94,7 +103,15 @@ public class ChatPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				UserController.getInstance().getWriter().queueAction(UserAction.SEND_MESSAGE, new Pair<String, String>(groupName, textField.getText()));
-				textField.setText("");
+				textField.setText("Digite uma mensagem...");
+				textField.setForeground(Color.GRAY);
+				textField.setBounds(5, 640, 795, 50);
+				textField.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						textField.setText("");
+						textField.setForeground(Color.BLACK);
+					}
+				});
 			}
 		});
 
@@ -127,7 +144,7 @@ public class ChatPanel extends JPanel {
 		if (groupName.equals(current)) {
 			updateScreen();
 		}
-		
+
 		frame.getChatListPanel().updateLastMessage(groupName);
 	}
 
