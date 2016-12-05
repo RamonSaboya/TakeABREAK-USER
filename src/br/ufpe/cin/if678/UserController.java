@@ -14,6 +14,7 @@ import br.ufpe.cin.if678.communication.Listener;
 import br.ufpe.cin.if678.communication.Reader;
 import br.ufpe.cin.if678.communication.ServerAction;
 import br.ufpe.cin.if678.communication.Writer;
+import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.util.Pair;
 import br.ufpe.cin.if678.util.Tuple;
 
@@ -175,6 +176,8 @@ public class UserController {
 											 // estar parada nesse ponto)
 		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
 											  // escrita
+
+		TakeABREAK.getInstance().setDisconnected();
 	}
 
 }

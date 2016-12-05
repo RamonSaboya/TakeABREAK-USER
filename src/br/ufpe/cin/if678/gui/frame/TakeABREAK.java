@@ -10,12 +10,10 @@ import javax.swing.JPanel;
 
 import br.ufpe.cin.if678.gui.Test;
 import br.ufpe.cin.if678.gui.panel.AuthenticationPanel;
-import br.ufpe.cin.if678.gui.panel.ChangePassword;
 import br.ufpe.cin.if678.gui.panel.ChatListPanel;
 import br.ufpe.cin.if678.gui.panel.ChatPanel;
-import br.ufpe.cin.if678.gui.panel.ProfilePanel;
+import br.ufpe.cin.if678.gui.panel.DisconnectedPanel;
 import br.ufpe.cin.if678.gui.panel.SidebarPanel;
-import br.ufpe.cin.if678.gui.panel.SignInPanel;
 import br.ufpe.cin.if678.gui.panel.StartupPanel;
 import br.ufpe.cin.if678.gui.panel.UserListPanel;
 
@@ -43,9 +41,7 @@ public class TakeABREAK extends JFrame {
 	private ChatListPanel chatListPanel;
 	private ChatPanel chatPanel;
 
-	private ChangePassword changePassword; // hey
-	private SignInPanel signInPanel;
-	private ProfilePanel profilePanel;
+	private DisconnectedPanel disconnectedPanel;
 
 	private HashMap<String, Test> waiting;
 
@@ -85,6 +81,8 @@ public class TakeABREAK extends JFrame {
 		// Inicia as páginas do aplicativo
 		this.startupPanel = new StartupPanel(this);
 		this.authenticationPanel = new AuthenticationPanel(this);
+
+		this.disconnectedPanel = new DisconnectedPanel(this);
 
 		this.waiting = new HashMap<String, Test>();
 
@@ -139,6 +137,12 @@ public class TakeABREAK extends JFrame {
 		synchronized (thread) {
 			thread.notify();
 		}
+	}
+
+	public void setDisconnected() {
+		add(disconnectedPanel);
+		repaint();
+		revalidate();
 	}
 
 	public AuthenticationPanel getAuthenticationPanel() {
