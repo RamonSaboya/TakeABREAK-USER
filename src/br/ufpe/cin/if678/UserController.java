@@ -180,10 +180,10 @@ public class UserController {
 	 */
 	public void serverUnnavailble() {
 		readerPair.getSecond().interrupt(); // Interrompe a thread de leitura
-											 // (apenas segurança, thread já deve
-											 // estar parada nesse ponto)
+											// (apenas segurança, thread já deve
+											// estar parada nesse ponto)
 		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
-											  // escrita
+											// escrita
 
 		TakeABREAK.getInstance().setDisconnected();
 	}
