@@ -19,7 +19,7 @@ import br.ufpe.cin.if678.gui.panel.UserListPanel;
 @SuppressWarnings("serial")
 public class TakeABREAK extends JFrame {
 
-	public static final Color BACKGROUND_COLOR = new Color(102, 255, 204);
+	public static final Color BACKGROUND_COLOR = new Color(220, 220, 220);
 
 	private static TakeABREAK INSTANCE;
 

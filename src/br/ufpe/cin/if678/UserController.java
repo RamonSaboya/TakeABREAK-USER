@@ -15,6 +15,7 @@ import br.ufpe.cin.if678.communication.Reader;
 import br.ufpe.cin.if678.communication.ServerAction;
 import br.ufpe.cin.if678.communication.Writer;
 import br.ufpe.cin.if678.gui.DisplayMessage;
+import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.threads.ReconnectionThread;
 import br.ufpe.cin.if678.util.Pair;
 import br.ufpe.cin.if678.util.Tuple;
@@ -168,6 +169,10 @@ public class UserController {
 		return groups.get(name);
 	}
 
+	public String getAddressPort(InetSocketAddress address) {
+		return address.getAddress().getHostAddress() + ":" + address.getPort();
+	}
+
 	public void assignUsername(int ID, String username) {
 		userID = ID;
 
@@ -195,7 +200,7 @@ public class UserController {
 			listener.onGroupReceive((Group) object);
 			break;
 		case GROUP_ADD_MEMBER:
-			listener.onGroupAddMember((Pair<String, Integer>) object);
+			listener.onGroupAddMember((Group) object);
 			break;
 		case GROUP_MESSAGE:
 			listener.onGroupMessage((Tuple<String, Integer, byte[]>) object);
@@ -208,12 +213,11 @@ public class UserController {
 	 */
 	public void serverUnnavailble() {
 		readerPair.getSecond().interrupt(); // Interrompe a thread de leitura
-											// (apenas segurança, thread já deve
-											// estar parada nesse ponto)
+											 // (apenas segurança, thread já deve
+											 // estar parada nesse ponto)
 		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
-											// escrita
-
-		System.out.println("FECHOUS");
+											  // escrita
+		TakeABREAK.getInstance().disconnected();
 	}
 
 	public void tryReconnect() {

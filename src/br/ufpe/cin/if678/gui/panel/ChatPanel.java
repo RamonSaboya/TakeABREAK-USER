@@ -1,7 +1,6 @@
 package br.ufpe.cin.if678.gui.panel;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -62,14 +61,9 @@ public class ChatPanel extends JPanel {
 		leftBorder.setForeground(Color.BLACK);
 		leftBorder.setBackground(Color.BLACK);
 
-		title = new JLabel("Conversa com: { user }");
+		title = new JLabel("");
 		title.setBounds(6, 5, 889, 65);
 		title.setHorizontalAlignment(SwingConstants.CENTER);
-
-		JLabel promptLabel = new JLabel("Escolha uma conversa para começar");
-		promptLabel.setBounds(200, 150, 500, 400);
-		promptLabel.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		promptLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(6, 75, 889, 555);
@@ -83,23 +77,8 @@ public class ChatPanel extends JPanel {
 		container.setPreferredSize(container.getMinimumSize());
 		container.setBackground(TakeABREAK.BACKGROUND_COLOR);
 
-		scrollPane.setViewportView(container);
-
-		add(leftBorder);
-		add(promptLabel);
-	}
-
-	public void setCurrent(String groupName) {
-		if (current == null) {
-			removeAll();
-		}
-
-		if (groupName.equals(current)) {
-			return;
-		}
-		current = groupName;
-
 		sendButton = new JButton("Enviar");
+		sendButton.setBounds(795, 640, 95, 50);
 
 		textField = new JTextField();
 		textField.setBounds(5, 640, 795, 50);
@@ -107,7 +86,33 @@ public class ChatPanel extends JPanel {
 		resetField();
 		textField.addKeyListener(new ButtonTextKeyListener(sendButton, "Digite uma mensagem..."));
 
-		sendButton.setBounds(795, 640, 95, 50);
+		JLabel promptLabel = new JLabel("Escolha uma conversa para começar");
+		promptLabel.setBounds(200, 150, 500, 400);
+		promptLabel.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		promptLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+		scrollPane.setViewportView(container);
+
+		container.add(promptLabel);
+
+		add(title);
+		add(scrollPane);
+		add(textField);
+		add(sendButton);
+		add(leftBorder);
+	}
+
+	public void setCurrent(String groupName) {
+		if (groupName.equals(current)) {
+			resetField();
+			return;
+		}
+		current = groupName;
+
+		for (int c = 0; c < sendButton.getActionListeners().length; c++) {
+			sendButton.removeActionListener(sendButton.getActionListeners()[c]);
+		}
+
 		sendButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -130,12 +135,14 @@ public class ChatPanel extends JPanel {
 
 		updateScreen();
 
-		scrollPane.setViewportView(container);
-
-		add(title);
-		add(scrollPane);
-		add(textField);
-		add(sendButton);
+		title.setText("Conversa com: " + current);
+		if (current.contains(":!:")) {
+			if (current.split(":!:")[0].equals(UserController.getInstance().getUser().getSecond())) {
+				title.setText("Conversa com: " + current.split(":!:")[1]);
+			} else {
+				title.setText("Conversa com: " + current.split(":!:")[0]);
+			}
+		}
 
 		repaint();
 		revalidate();
@@ -153,13 +160,17 @@ public class ChatPanel extends JPanel {
 	}
 
 	public void updateScreen() {
-		for (Component component : container.getComponents()) {
-			container.remove(component);
-		}
+		container.removeAll();
 
 		if (UserController.getInstance().getMessages(current) == null) {
+			container.setPreferredSize(container.getMinimumSize());
+
+			repaint();
+			revalidate();
 			return;
 		}
+
+		container.setPreferredSize(new Dimension(299, (UserController.getInstance().getMessages(current).size() * 45) + 5));
 
 		int y = 0;
 		for (DisplayMessage message : UserController.getInstance().getMessages(current)) {

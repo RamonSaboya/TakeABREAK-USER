@@ -12,7 +12,7 @@ import javax.swing.SwingConstants;
 
 import br.ufpe.cin.if678.gui.ButtonTextKeyListener;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
-import br.ufpe.cin.if678.threads.ServerConnectionThread;
+import br.ufpe.cin.if678.threads.ThreadManager;
 
 @SuppressWarnings("serial")
 public class StartupPanel extends JPanel {
@@ -54,6 +54,7 @@ public class StartupPanel extends JPanel {
 		addressLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		JButton connectButton = new JButton("Conectar");
+		connectButton.setName("connectButton");
 
 		addressField = new JTextField();
 		addressField.setBounds(450, 75, 145, 20);
@@ -64,9 +65,9 @@ public class StartupPanel extends JPanel {
 		addressField.setCaretPosition(0);
 		addressField.addKeyListener(new ButtonTextKeyListener(connectButton, "localhost"));
 
-		ServerConnectionThread serverConnectionThread = new ServerConnectionThread(frame, this, addressField);
+		ThreadManager thread = new ThreadManager(frame, this, addressField, 0);
 		connectButton.setBounds(605, 75, 145, 20);
-		connectButton.addActionListener(serverConnectionThread);
+		connectButton.addActionListener(thread);
 
 		// Insere todos os elementos no painel
 		add(smallText);

@@ -1,8 +1,6 @@
 package br.ufpe.cin.if678.threads;
 
 import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JTextField;
@@ -11,7 +9,7 @@ import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.gui.panel.StartupPanel;
 
-public class ServerConnectionThread extends Thread implements ActionListener {
+public class ServerConnectionThread extends Thread {
 
 	private TakeABREAK frame;
 	private UserController controller;
@@ -30,7 +28,7 @@ public class ServerConnectionThread extends Thread implements ActionListener {
 	}
 
 	@Override
-	public synchronized void run() {
+	public void run() {
 		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		try {
 			controller.initialize(addressField.getText());
@@ -46,11 +44,6 @@ public class ServerConnectionThread extends Thread implements ActionListener {
 		frame.clearFrame();
 		frame.addPanel(frame.getAuthenticationPanel());
 		frame.getAuthenticationPanel().grabFocus();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		start();
 	}
 
 }

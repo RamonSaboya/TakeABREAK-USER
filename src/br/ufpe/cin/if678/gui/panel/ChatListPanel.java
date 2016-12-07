@@ -1,7 +1,6 @@
 package br.ufpe.cin.if678.gui.panel;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
@@ -58,7 +59,6 @@ public class ChatListPanel extends JPanel {
 		container.setLayout(null);
 		container.setLocation(0, 0);
 		container.setMinimumSize(new Dimension(299, 570));
-		container.setPreferredSize(container.getMinimumSize());
 		container.setBackground(TakeABREAK.BACKGROUND_COLOR);
 
 		scrollPane.setViewportView(container);
@@ -72,14 +72,11 @@ public class ChatListPanel extends JPanel {
 	public void updateChatList() {
 		overlayButtons.clear();
 		messageLabels.clear();
-		for (Component component : container.getComponents()) {
-			container.remove(component);
-		}
-
-		repaint();
-		revalidate();
+		container.removeAll();
 
 		HashMap<String, Group> groups = UserController.getInstance().getGroups();
+
+		container.setPreferredSize(new Dimension(299, (groups.size() * 50) + 1));
 
 		int y = 0;
 
@@ -90,7 +87,7 @@ public class ChatListPanel extends JPanel {
 			String username = UserController.getInstance().getUser().getSecond();
 
 			overlayButton = new JButton();
-			overlayButton.setBounds(0, y, 300, 50);
+			overlayButton.setBounds(0, y, 281, 50);
 			overlayButton.setBackground(Color.BLACK);
 			overlayButton.setContentAreaFilled(false);
 			overlayButton.addActionListener(new ActionListener() {
@@ -99,12 +96,13 @@ public class ChatListPanel extends JPanel {
 					TakeABREAK.getInstance().getChatPanel().setCurrent(group.getKey());
 
 					resetButtons();
-					((JButton) event.getSource()).setContentAreaFilled(true);
+
+					((JButton) event.getSource()).setBorder(BorderFactory.createLoweredBevelBorder());
 				}
 			});
 
 			groupLabel = new JLabel(group.getKey());
-			groupLabel.setBounds(0, y + 5, 300, 20);
+			groupLabel.setBounds(0, y + 5, 281, 20);
 			if (group.getKey().contains(":!:")) {
 				if (group.getKey().split(":!:")[0].equals(username)) {
 					groupLabel.setText(group.getKey().split(":!:")[1]);
@@ -114,8 +112,8 @@ public class ChatListPanel extends JPanel {
 			}
 			groupLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-			messageLabel = new JLabel(UserController.getInstance().getLastMessage(group.getKey()));
-			messageLabel.setBounds(0, y + 25, 300, 20);
+			messageLabel = new JLabel("  " + UserController.getInstance().getLastMessage(group.getKey()));
+			messageLabel.setBounds(0, y + 25, 281, 20);
 
 			y += 50;
 
@@ -125,21 +123,21 @@ public class ChatListPanel extends JPanel {
 
 			overlayButtons.add(overlayButton);
 			messageLabels.put(group.getKey(), messageLabel);
-
-			repaint();
-			revalidate();
 		}
+
+		repaint();
+		revalidate();
 	}
 
 	public void updateLastMessage(String groupName) {
 		if (messageLabels.containsKey(groupName)) {
-			messageLabels.get(groupName).setText(UserController.getInstance().getLastMessage(groupName));
+			messageLabels.get(groupName).setText("  " + UserController.getInstance().getLastMessage(groupName));
 		}
 	}
 
 	public void resetButtons() {
 		for (JButton button : overlayButtons) {
-			button.setContentAreaFilled(false);
+			button.setBorder(UIManager.getBorder("Button.border"));
 		}
 	}
 

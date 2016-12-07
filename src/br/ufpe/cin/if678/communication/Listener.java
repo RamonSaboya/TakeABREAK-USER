@@ -19,8 +19,8 @@ public class Listener {
 
 	private UserController controller;
 
-	private InitialRequestThread initialRequestThread;
-	private GroupCreationThread groupCreationThread;
+	private Thread initialRequestThread;
+	private Thread groupCreationThread;
 
 	public Listener(UserController controller) {
 		this.controller = controller;
@@ -35,7 +35,7 @@ public class Listener {
 	}
 
 	public void onVerifyUsername(int ID) {
-		initialRequestThread.setID(ID);
+		((InitialRequestThread) initialRequestThread).setID(ID);
 
 		synchronized (initialRequestThread) {
 			initialRequestThread.notify();
@@ -74,11 +74,12 @@ public class Listener {
 		}
 	}
 
-	public void onGroupAddMember(Pair<String, Integer> data) {
-		String name = data.getFirst();
-		int user = data.getSecond();
+	public void onGroupAddMember(Group group) {
+		controller.getGroups().put(group.getName(), group);
 
-		controller.getGroup(name).addMember(user);
+		if (groupCreationThread == null) {
+			return;
+		}
 
 		synchronized (groupCreationThread) {
 			groupCreationThread.notify();
@@ -97,18 +98,14 @@ public class Listener {
 			e.printStackTrace();
 		}
 
-		if (controller.getGroup(groupName) == null) {
-			GroupCreationThread groupCreationThread = new GroupCreationThread(senderID);
-			groupCreationThread.start();
-		} else {
-			if (controller.getMessages(groupName) == null) {
-				controller.getGroupMessages().put(groupName, new ArrayList<DisplayMessage>());
-			}
-
-			controller.getMessages(groupName).add(new DisplayMessage(senderID, message));
-
-			TakeABREAK.getInstance().getChatPanel().updateScreen();
+		if (controller.getMessages(groupName) == null) {
+			controller.getGroupMessages().put(groupName, new ArrayList<DisplayMessage>());
 		}
+
+		controller.getMessages(groupName).add(new DisplayMessage(senderID, message));
+
+		TakeABREAK.getInstance().getChatPanel().updateScreen();
+		TakeABREAK.getInstance().getChatListPanel().updateChatList();
 	}
 
 }

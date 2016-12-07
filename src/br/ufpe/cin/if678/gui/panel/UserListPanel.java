@@ -1,7 +1,6 @@
 package br.ufpe.cin.if678.gui.panel;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import javax.swing.SwingConstants;
 
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
-import br.ufpe.cin.if678.threads.GroupCreationThread;
+import br.ufpe.cin.if678.threads.ThreadManager;
 import br.ufpe.cin.if678.util.Pair;
 
 @SuppressWarnings("serial")
@@ -55,7 +54,6 @@ public class UserListPanel extends JPanel {
 		container.setLayout(null);
 		container.setLocation(0, 0);
 		container.setMinimumSize(new Dimension(299, 570));
-		container.setPreferredSize(container.getMinimumSize());
 		container.setBackground(TakeABREAK.BACKGROUND_COLOR);
 
 		scrollPane.setViewportView(container);
@@ -68,14 +66,11 @@ public class UserListPanel extends JPanel {
 
 	public void updateUsers() {
 		overlayButtons.clear();
-		for (Component component : container.getComponents()) {
-			container.remove(component);
-		}
-
-		repaint();
-		revalidate();
+		container.removeAll();
 
 		HashMap<Integer, Pair<String, InetSocketAddress>> IDToNameAddress = UserController.getInstance().getIDToNameAddress();
+		
+		container.setPreferredSize(new Dimension(299, (IDToNameAddress.size() * 50) + 1));
 
 		int y = 0;
 
@@ -84,18 +79,19 @@ public class UserListPanel extends JPanel {
 		JButton overlayButton;
 		for (int ID : IDToNameAddress.keySet()) {
 			overlayButton = new JButton();
-			overlayButton.setBounds(0, y, 300, 50);
+			overlayButton.setName("overlayButton");
+			overlayButton.setBounds(0, y, 281, 50);
 			overlayButton.setContentAreaFilled(false);
 
-			GroupCreationThread overlayButtonThread = new GroupCreationThread(ID);
-			overlayButton.addActionListener(overlayButtonThread);
+			ThreadManager thread = new ThreadManager(null, null, null, ID);
+			overlayButton.addActionListener(thread);
 
 			usernameLabel = new JLabel(IDToNameAddress.get(ID).getFirst());
-			usernameLabel.setBounds(0, y + 5, 300, 20);
+			usernameLabel.setBounds(0, y + 5, 281, 20);
 			usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 			IPLabel = new JLabel(IDToNameAddress.get(ID).getSecond().getHostString() + ":" + IDToNameAddress.get(ID).getSecond().getPort());
-			IPLabel.setBounds(0, y + 25, 300, 20);
+			IPLabel.setBounds(0, y + 25, 281, 20);
 			IPLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 			y += 50;

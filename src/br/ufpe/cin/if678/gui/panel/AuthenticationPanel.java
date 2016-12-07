@@ -10,7 +10,7 @@ import javax.swing.SwingConstants;
 
 import br.ufpe.cin.if678.gui.ButtonTextKeyListener;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
-import br.ufpe.cin.if678.threads.InitialRequestThread;
+import br.ufpe.cin.if678.threads.ThreadManager;
 
 @SuppressWarnings("serial")
 public class AuthenticationPanel extends JPanel {
@@ -35,6 +35,7 @@ public class AuthenticationPanel extends JPanel {
 		promptLabel.setBounds(450, 310, 300, 20);
 
 		JButton loginButton = new JButton("Login");
+		loginButton.setName("loginButton");
 
 		usernameField = new JTextField();
 		usernameField.setBounds(500, 340, 200, 20);
@@ -45,9 +46,9 @@ public class AuthenticationPanel extends JPanel {
 		usernameField.setCaretPosition(0);
 		usernameField.addKeyListener(new ButtonTextKeyListener(loginButton, "Ramon"));
 
-		InitialRequestThread initialRequestThread = new InitialRequestThread(frame, this, usernameField);
+		ThreadManager thread = new ThreadManager(frame, this, usernameField, 0);
 		loginButton.setBounds(550, 370, 100, 20);
-		loginButton.addActionListener(initialRequestThread);
+		loginButton.addActionListener(thread);
 
 		add(promptLabel);
 		add(usernameField);
