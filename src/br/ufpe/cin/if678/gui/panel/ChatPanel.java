@@ -91,7 +91,7 @@ public class ChatPanel extends JPanel {
 
 	public void setCurrent(String groupName) {
 		if (current == null) {
-			container.removeAll();
+			removeAll();
 		}
 
 		if (groupName.equals(current)) {
@@ -154,7 +154,7 @@ public class ChatPanel extends JPanel {
 
 	public void updateScreen() {
 		for (Component component : container.getComponents()) {
-			remove(component);
+			container.remove(component);
 		}
 
 		if (UserController.getInstance().getMessages(current) == null) {
