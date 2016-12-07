@@ -69,8 +69,11 @@ public class UserListPanel extends JPanel {
 	public void updateUsers() {
 		overlayButtons.clear();
 		for (Component component : container.getComponents()) {
-			remove(component);
+			container.remove(component);
 		}
+
+		repaint();
+		revalidate();
 
 		HashMap<Integer, Pair<String, InetSocketAddress>> IDToNameAddress = UserController.getInstance().getIDToNameAddress();
 

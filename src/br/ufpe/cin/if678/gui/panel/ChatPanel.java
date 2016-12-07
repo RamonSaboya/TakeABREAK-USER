@@ -91,7 +91,7 @@ public class ChatPanel extends JPanel {
 
 	public void setCurrent(String groupName) {
 		if (current == null) {
-			removeAll();
+			container.removeAll();
 		}
 
 		if (groupName.equals(current)) {

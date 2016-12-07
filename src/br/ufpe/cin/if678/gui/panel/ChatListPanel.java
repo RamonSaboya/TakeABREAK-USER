@@ -73,8 +73,11 @@ public class ChatListPanel extends JPanel {
 		overlayButtons.clear();
 		messageLabels.clear();
 		for (Component component : container.getComponents()) {
-			remove(component);
+			container.remove(component);
 		}
+
+		repaint();
+		revalidate();
 
 		HashMap<String, Group> groups = UserController.getInstance().getGroups();
 
