@@ -64,7 +64,7 @@ public class StartupPanel extends JPanel {
 		addressField.setCaretPosition(0);
 		addressField.addKeyListener(new ButtonTextKeyListener(connectButton, "localhost"));
 
-		ServerConnectionThread serverConnectionThread = new ServerConnectionThread(frame, this, addressField.getText());
+		ServerConnectionThread serverConnectionThread = new ServerConnectionThread(frame, this, addressField);
 		connectButton.setBounds(605, 75, 145, 20);
 		connectButton.addActionListener(serverConnectionThread);
 

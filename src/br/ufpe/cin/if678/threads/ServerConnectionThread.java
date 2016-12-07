@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import javax.swing.JTextField;
+
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.gui.panel.StartupPanel;
@@ -16,22 +18,22 @@ public class ServerConnectionThread extends Thread implements ActionListener {
 
 	private StartupPanel panel;
 
-	private String IP;
+	private JTextField addressField;
 
-	public ServerConnectionThread(TakeABREAK frame, StartupPanel panel, String IP) {
+	public ServerConnectionThread(TakeABREAK frame, StartupPanel panel, JTextField addressField) {
 		this.frame = frame;
 		this.controller = UserController.getInstance();
 
 		this.panel = panel;
 
-		this.IP = IP;
+		this.addressField = addressField;
 	}
 
 	@Override
 	public synchronized void run() {
 		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		try {
-			controller.initialize(IP);
+			controller.initialize(addressField.getText());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Não foi possível conectar com o servidor");

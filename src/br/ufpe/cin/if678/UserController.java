@@ -81,8 +81,7 @@ public class UserController {
 		this.serverIP = serverIP;
 
 		// Cria o socket no endereço do servidor
-		Socket socket = new Socket();
-		socket.connect(new InetSocketAddress(serverIP, MAIN_PORT), 100);
+		Socket socket = new Socket(serverIP, MAIN_PORT);
 
 		userAddress = (InetSocketAddress) socket.getLocalSocketAddress();
 
