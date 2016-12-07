@@ -2,14 +2,12 @@ package br.ufpe.cin.if678.gui.frame;
 
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import br.ufpe.cin.if678.UserController;
-import br.ufpe.cin.if678.gui.Test;
 import br.ufpe.cin.if678.gui.panel.AuthenticationPanel;
 import br.ufpe.cin.if678.gui.panel.ChatListPanel;
 import br.ufpe.cin.if678.gui.panel.ChatPanel;
@@ -43,8 +41,6 @@ public class TakeABREAK extends JFrame {
 	private ChatPanel chatPanel;
 
 	private DisconnectedPanel disconnectedPanel;
-
-	private HashMap<String, Test> waiting;
 
 	/**
 	 * Inicia a aplicação da GUI
@@ -85,8 +81,6 @@ public class TakeABREAK extends JFrame {
 
 		this.disconnectedPanel = new DisconnectedPanel(this);
 
-		this.waiting = new HashMap<String, Test>();
-
 		clearFrame();
 		addPanel(startupPanel); // Define a página inicial
 
@@ -125,27 +119,30 @@ public class TakeABREAK extends JFrame {
 		chatPanel = new ChatPanel(this);
 	}
 
-	public void waitGroup(String groupName, Test thread) {
-		waiting.put(groupName, thread);
-	}
-
-	public void notifyGroup(String groupName) {
-		if (!waiting.containsKey(groupName)) {
-			return;
-		}
-
-		Thread thread = waiting.get(groupName);
-		synchronized (thread) {
-			thread.notify();
-		}
-	}
-
-	public void setDisconnected() {
+	public void disconnected() {
 		clearFrame();
 
 		addPanel(disconnectedPanel);
 
 		UserController.getInstance().tryReconnect();
+	}
+
+	public void reconnected() {
+		clearFrame();
+
+		addPanel(sidebarPanel);
+		addPanel(userListPanel);
+		addPanel(chatPanel);
+	}
+
+	public void lock() {
+		userListPanel.lock();
+		chatListPanel.lock();
+	}
+
+	public void unlock() {
+		userListPanel.unlock();
+		chatListPanel.unlock();
 	}
 
 	public AuthenticationPanel getAuthenticationPanel() {

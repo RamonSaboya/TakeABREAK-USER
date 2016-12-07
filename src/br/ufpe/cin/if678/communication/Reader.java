@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import br.ufpe.cin.if678.UserController;
 
@@ -49,7 +50,7 @@ public class Reader implements Runnable {
 				Object object = OIS.readObject();
 
 				controller.callEvent(action, object);
-			} catch (SocketException e) {
+			} catch (SocketException | SocketTimeoutException e) {
 				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor
 				UserController.getInstance().serverUnnavailble(); // Avisa ao controlador que o cliente desconectou
 				return; // Encerra a execução da thread

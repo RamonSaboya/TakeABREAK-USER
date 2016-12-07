@@ -1,20 +1,21 @@
 package br.ufpe.cin.if678;
 
 import static br.ufpe.cin.if678.communication.UserAction.REQUEST_USER_LIST;
-import static br.ufpe.cin.if678.communication.UserAction.SEND_USERNAME;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 
 import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.communication.Listener;
 import br.ufpe.cin.if678.communication.Reader;
 import br.ufpe.cin.if678.communication.ServerAction;
 import br.ufpe.cin.if678.communication.Writer;
-import br.ufpe.cin.if678.gui.frame.TakeABREAK;
+import br.ufpe.cin.if678.gui.DisplayMessage;
+import br.ufpe.cin.if678.threads.ReconnectionThread;
 import br.ufpe.cin.if678.util.Pair;
 import br.ufpe.cin.if678.util.Tuple;
 
@@ -45,77 +46,66 @@ public class UserController {
 		return INSTANCE;
 	}
 
-	private String IP;
+	private String serverIP;
+
+	private int userID;
+	private InetSocketAddress userAddress;
+
+	private HashMap<Integer, Pair<String, InetSocketAddress>> IDToNameAddress;
+	private HashMap<String, Integer> nameToID;
+	private HashMap<InetSocketAddress, Integer> addressToID;
+
+	private HashMap<String, List<DisplayMessage>> groupMessages;
+
+	private Listener listener;
 
 	// Threads de leitura e escrita
 	private Pair<Reader, Thread> readerPair;
 	private Pair<Writer, Thread> writerPair;
 
-	private Listener listener;
-
-	private InetSocketAddress user;
-
-	private HashMap<InetSocketAddress, String> addressToName;
-	private HashMap<String, InetSocketAddress> nameToAddress;
-
 	private HashMap<String, Group> groups;
 
 	private UserController() {
-		this.listener = new Listener(this);
+		this.IDToNameAddress = new HashMap<Integer, Pair<String, InetSocketAddress>>();
+		this.nameToID = new HashMap<String, Integer>();
+		this.addressToID = new HashMap<InetSocketAddress, Integer>();
 
-		this.addressToName = new HashMap<InetSocketAddress, String>();
-		this.nameToAddress = new HashMap<String, InetSocketAddress>();
+		this.groupMessages = new HashMap<String, List<DisplayMessage>>();
+
+		this.listener = new Listener(this);
 
 		this.groups = new HashMap<String, Group>();
 	}
 
-	public boolean initialize(String IP) {
-		this.IP = IP;
+	public void initialize(String serverIP) throws UnknownHostException, IOException {
+		this.serverIP = serverIP;
 
-		try {
-			// Cria o socket no endereço do servidor
-			Socket socket = new Socket(IP, MAIN_PORT);
+		// Cria o socket no endereço do servidor
+		Socket socket = new Socket();
+		socket.connect(new InetSocketAddress(serverIP, MAIN_PORT), 100);
 
-			user = (InetSocketAddress) socket.getLocalSocketAddress();
+		userAddress = (InetSocketAddress) socket.getLocalSocketAddress();
 
-			// Inicia os gerenciadores de leitura e escrita
-			Reader reader = new Reader(socket);
-			Writer writer = new Writer(socket);
+		// Inicia os gerenciadores de leitura e escrita
+		Reader reader = new Reader(socket);
+		Writer writer = new Writer(socket);
 
-			// Inicia as instâncias das threads de leitura e escrita
-			Thread readerThread = new Thread(reader);
-			Thread writerThread = new Thread(writer);
+		// Inicia as instâncias das threads de leitura e escrita
+		Thread readerThread = new Thread(reader);
+		Thread writerThread = new Thread(writer);
 
-			// Armazena as instancias dos gerenciadores de leitura e escrita, e
-			// suas threads
-			this.readerPair = new Pair<Reader, Thread>(reader, readerThread);
-			this.writerPair = new Pair<Writer, Thread>(writer, writerThread);
+		// Armazena as instancias dos gerenciadores de leitura e escrita, e
+		// suas threads
+		this.readerPair = new Pair<Reader, Thread>(reader, readerThread);
+		this.writerPair = new Pair<Writer, Thread>(writer, writerThread);
 
-			// Inicia a exeucão das threads de leitura e escrita
-			readerThread.start();
-			writerThread.start();
-
-			return true;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return false;
-	}
-
-	public void setUsername(String username) {
-		getWriter().queueAction(SEND_USERNAME, username);
-
-		addressToName.put(user, username);
-		nameToAddress.put(username, user);
-
-		getWriter().queueAction(REQUEST_USER_LIST, null);
+		// Inicia a exeucão das threads de leitura e escrita
+		readerThread.start();
+		writerThread.start();
 	}
 
 	public String getIP() {
-		return IP;
+		return serverIP;
 	}
 
 	public Reader getReader() {
@@ -126,24 +116,49 @@ public class UserController {
 		return writerPair.getFirst();
 	}
 
-	public InetSocketAddress getUser() {
-		return user;
+	public Tuple<Integer, String, InetSocketAddress> getUser() {
+		return new Tuple<Integer, String, InetSocketAddress>(userID, IDToNameAddress.get(userID).getFirst(), userAddress);
 	}
 
-	public HashMap<InetSocketAddress, String> getAddressToName() {
-		return addressToName;
+	public HashMap<Integer, Pair<String, InetSocketAddress>> getIDToNameAddress() {
+		return IDToNameAddress;
 	}
 
-	public String getName(InetSocketAddress address) {
-		return addressToName.get(address);
+	public String getName(int ID) {
+		return IDToNameAddress.get(ID).getFirst();
 	}
 
-	public HashMap<String, InetSocketAddress> getNameToAddress() {
-		return nameToAddress;
+	public InetSocketAddress getAddress(int ID) {
+		return IDToNameAddress.get(ID).getSecond();
 	}
 
-	public InetSocketAddress getAddress(String name) {
-		return nameToAddress.get(name);
+	public HashMap<String, Integer> getNameToID() {
+		return nameToID;
+	}
+
+	public HashMap<InetSocketAddress, Integer> getAddressToID() {
+		return addressToID;
+	}
+
+	public HashMap<String, List<DisplayMessage>> getGroupMessages() {
+		return groupMessages;
+	}
+
+	public List<DisplayMessage> getMessages(String groupName) {
+		return groupMessages.get(groupName);
+	}
+
+	public String getLastMessage(String groupName) {
+		if (getMessages(groupName) == null) {
+			return "";
+		}
+
+		DisplayMessage message = getMessages(groupName).get(getMessages(groupName).size() - 1);
+		return IDToNameAddress.get(message.getSenderID()).getFirst() + ": " + message.getMessage();
+	}
+
+	public Listener getListener() {
+		return listener;
 	}
 
 	public HashMap<String, Group> getGroups() {
@@ -154,23 +169,37 @@ public class UserController {
 		return groups.get(name);
 	}
 
+	public void assignUsername(int ID, String username) {
+		userID = ID;
+
+		IDToNameAddress.put(ID, new Pair<String, InetSocketAddress>(username, userAddress));
+
+		nameToID.put(username, ID);
+		addressToID.put(userAddress, ID);
+
+		getWriter().queueAction(REQUEST_USER_LIST, null);
+	}
+
 	@SuppressWarnings("unchecked")
 	public void callEvent(ServerAction action, Object object) {
 		switch (action) {
-		case SEND_USERS_LIST:
-			listener.onUserListUpdate((HashMap<InetSocketAddress, String>) object);
+		case VERIFY_USERNAME:
+			listener.onVerifyUsername((Integer) object);
 			break;
-		case SEND_USER_CONNECTED:
-			listener.onUserConnect((Pair<InetSocketAddress, String>) object);
+		case USER_CONNECTED:
+			listener.onUserConnect((Tuple<Integer, String, InetSocketAddress>) object);
+			break;
+		case USERS_LIST_UPDATE:
+			listener.onUserListUpdate((HashMap<Integer, Pair<String, InetSocketAddress>>) object);
 			break;
 		case SEND_GROUP:
 			listener.onGroupReceive((Group) object);
 			break;
 		case GROUP_ADD_MEMBER:
-			listener.onGroupAddMember((Pair<String, InetSocketAddress>) object);
+			listener.onGroupAddMember((Pair<String, Integer>) object);
 			break;
 		case GROUP_MESSAGE:
-			listener.onGroupMessage((Tuple<String, InetSocketAddress, Object>) object);
+			listener.onGroupMessage((Tuple<String, Integer, byte[]>) object);
 			break;
 		}
 	}
@@ -185,11 +214,12 @@ public class UserController {
 		writerPair.getFirst().forceStop();  // Força o encerramento da thread de
 											  // escrita
 
-		TakeABREAK.getInstance().setDisconnected();
+		System.out.println("FECHOUS");
 	}
 
 	public void tryReconnect() {
-
+		ReconnectionThread thread = new ReconnectionThread();
+		thread.start();
 	}
 
 }

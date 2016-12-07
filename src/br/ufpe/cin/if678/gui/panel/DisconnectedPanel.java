@@ -26,7 +26,7 @@ public class DisconnectedPanel extends JPanel {
 		JLabel messageLabel = new JLabel("Perdeu conexão com o servidor, tentando reconectar");
 		messageLabel.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		messageLabel.setBounds(275, 241, 395, 178);
+		messageLabel.setBounds(250, 241, 700, 178);
 		add(messageLabel);
 	}
 }

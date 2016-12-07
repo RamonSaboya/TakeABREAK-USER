@@ -1,29 +1,22 @@
 package br.ufpe.cin.if678.gui.panel;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,6 +29,7 @@ import javax.swing.SwingConstants;
 import br.ufpe.cin.if678.Encryption;
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.communication.UserAction;
+import br.ufpe.cin.if678.gui.ButtonTextKeyListener;
 import br.ufpe.cin.if678.gui.DisplayMessage;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.util.Pair;
@@ -43,24 +37,19 @@ import br.ufpe.cin.if678.util.Pair;
 @SuppressWarnings("serial")
 public class ChatPanel extends JPanel {
 
-	private TakeABREAK frame;
-
-	private List<JComponent> components;
-
 	private String current;
-	private JScrollPane scrollPane;
 
-	private HashMap<String, List<DisplayMessage>> messages;
+	private JLabel title;
+	private JScrollPane scrollPane;
+	private JPanel container;
+	private JTextField textField;
+	private JButton sendButton;
 
 	/**
 	 * Cria o painel da página HOME.
 	 */
 	public ChatPanel(TakeABREAK frame) {
 		super();
-
-		this.frame = frame;
-		this.components = new ArrayList<JComponent>();
-		this.messages = new HashMap<String, List<DisplayMessage>>();
 
 		// Seta as características do painel
 		setBounds(300, 0, 900, 700);
@@ -73,164 +62,129 @@ public class ChatPanel extends JPanel {
 		leftBorder.setForeground(Color.BLACK);
 		leftBorder.setBackground(Color.BLACK);
 
-		// Insere todos os elementos no painel
-		add(leftBorder);
+		title = new JLabel("Conversa com: { user }");
+		title.setBounds(6, 5, 889, 65);
+		title.setHorizontalAlignment(SwingConstants.CENTER);
 
 		JLabel promptLabel = new JLabel("Escolha uma conversa para começar");
-		promptLabel.setBounds(339, 176, 462, 370);
-		add(promptLabel);
+		promptLabel.setBounds(200, 150, 500, 400);
+		promptLabel.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		promptLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-		components.add(promptLabel);
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(6, 75, 889, 555);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+		container = new JPanel();
+		container.setLayout(null);
+		container.setLocation(0, 0);
+		container.setMinimumSize(new Dimension(869, 550));
+		container.setPreferredSize(container.getMinimumSize());
+		container.setBackground(TakeABREAK.BACKGROUND_COLOR);
+
+		scrollPane.setViewportView(container);
+
+		add(leftBorder);
+		add(promptLabel);
 	}
 
 	public void setCurrent(String groupName) {
+		if (current == null) {
+			removeAll();
+		}
+
 		if (groupName.equals(current)) {
 			return;
 		}
 		current = groupName;
-		if (!messages.containsKey(groupName)) {
-			messages.put(groupName, new ArrayList<DisplayMessage>());
-		}
 
-		scrollPane = null;
-		for (JComponent component : components) {
-			remove(component);
-		}
-		repaint();
-		revalidate();
+		sendButton = new JButton("Enviar");
 
-		JTextField textField = new JTextField("Digite uma mensagem...");
-		textField.setForeground(Color.GRAY);
+		textField = new JTextField();
 		textField.setBounds(5, 640, 795, 50);
 		textField.setMargin(new Insets(0, 10, 0, 10));
-		textField.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (textField.getText().equals("Digite uma mensagem...")) {
-					textField.setCaretPosition(0);
-				}
-			}
+		resetField();
+		textField.addKeyListener(new ButtonTextKeyListener(sendButton, "Digite uma mensagem..."));
 
-		});
-
-		JButton sendButton = new JButton("Enviar");
 		sendButton.setBounds(795, 640, 95, 50);
 		sendButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (textField.getText().equals("Digite uma mensagem...") || textField.getText().equals("")) {
-					textField.grabFocus();
-					textField.setForeground(Color.GRAY);
-					textField.setText("Digite uma mensagem...");
-					textField.setCaretPosition(0);
+					resetField();
 					return;
 				}
 
 				try {
-					byte[] encrypted = Encryption.encryptMessage(UserController.getInstance().getUser().getPort(), textField.getText());
+					byte[] encrypted = Encryption.encryptMessage(UserController.getInstance().getUser().getFirst(), textField.getText());
 					UserController.getInstance().getWriter().queueAction(UserAction.SEND_MESSAGE, new Pair<String, byte[]>(groupName, encrypted));
 				} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
 						| InvalidAlgorithmParameterException | IOException e1) {
 					e1.printStackTrace();
 				}
-				textField.setText("Digite uma mensagem...");
-				textField.setForeground(Color.GRAY);
-				textField.setBounds(5, 640, 795, 50);
-				textField.addMouseListener(new MouseAdapter() {
-					public void mouseClicked(MouseEvent e) {
-						textField.setText("");
-						textField.setForeground(Color.BLACK);
-					}
-				});
+
+				resetField();
 			}
 		});
-
-		textField.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					sendButton.doClick();
-				} else if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE && textField.getText().equals("")) {
-					textField.setForeground(Color.GRAY);
-					textField.setText("Digite uma mensagem...");
-					textField.setCaretPosition(0);
-				}
-				if (textField.getText().equals("Digite uma mensagem...")) {
-					textField.setText("");
-					textField.setForeground(Color.BLACK);
-				}
-			}
-
-			public void keyReleased(KeyEvent event) {
-			}
-
-			public void keyTyped(KeyEvent event) {
-			}
-		});
-
-		scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(5, 5, 885, 630);
 
 		updateScreen();
 
+		scrollPane.setViewportView(container);
+
+		add(title);
+		add(scrollPane);
 		add(textField);
 		add(sendButton);
-		add(scrollPane);
-		components.add(textField);
-		components.add(sendButton);
-		components.add(scrollPane);
 
 		repaint();
 		revalidate();
 	}
 
-	public void receiveMessage(String groupName, InetSocketAddress sender, String message) {
-		DisplayMessage display = new DisplayMessage(sender, UserController.getInstance().getName(sender), message);
+	public String getCurrent() {
+		return current;
+	}
 
-		if (!messages.containsKey(groupName)) {
-			messages.put(groupName, new ArrayList<DisplayMessage>());
-		}
-		messages.get(groupName).add(display);
-
-		if (groupName.equals(current)) {
-			updateScreen();
-		}
-
-		frame.getChatListPanel().updateLastMessage(groupName);
+	public void resetField() {
+		textField.setText("Digite uma mensagem...");
+		textField.setForeground(Color.GRAY);
+		textField.grabFocus();
+		textField.setCaretPosition(0);
 	}
 
 	public void updateScreen() {
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.setPreferredSize(new Dimension(885, (messages.get(current).size() * 45) + 5));
-		panel.setBackground(TakeABREAK.BACKGROUND_COLOR);
+		for (Component component : container.getComponents()) {
+			remove(component);
+		}
+
+		if (UserController.getInstance().getMessages(current) == null) {
+			return;
+		}
 
 		int y = 0;
-		for (DisplayMessage message : messages.get(current)) {
+		for (DisplayMessage message : UserController.getInstance().getMessages(current)) {
 			JTextPane textPane = new JTextPane();
 
-			if (message.getSender().equals(UserController.getInstance().getUser())) {
+			if (message.getSenderID() == UserController.getInstance().getUser().getFirst()) {
 				textPane.setBounds(355, 5 + y, 500, 40);
 			} else {
 				textPane.setBounds(5, 5 + y, 500, 40);
 			}
 
 			textPane.setText(message.getMessage());
-			panel.add(textPane);
+
+			container.add(textPane);
 
 			y += 45;
 		}
 
-		scrollPane.setViewportView(panel);
+		repaint();
+		revalidate();
 	}
 
-	public String getLastMessage(String groupName) {
-		if (!messages.containsKey(groupName) || messages.get(groupName).isEmpty()) {
-			return "";
-		}
-
-		DisplayMessage message = messages.get(groupName).get(messages.get(groupName).size() - 1);
-		return "  " + message.getSenderName() + ": " + message.getMessage();
+	public void grabFocus() {
+		textField.grabFocus();
+		textField.setCaretPosition(0);
 	}
 
 }

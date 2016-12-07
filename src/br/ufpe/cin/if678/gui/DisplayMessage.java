@@ -1,29 +1,30 @@
 package br.ufpe.cin.if678.gui;
 
-import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
 
 public class DisplayMessage {
 
-	private InetSocketAddress sender;
-	private String senderName;
+	private int senderID;
 	private String message;
 
-	public DisplayMessage(InetSocketAddress sender, String senderName, String message) {
-		this.sender = sender;
-		this.senderName = senderName;
+	private LocalDateTime time;
+
+	public DisplayMessage(int senderID, String message) {
+		this.senderID = senderID;
 		this.message = message;
+		this.time = LocalDateTime.now();
 	}
 
-	public InetSocketAddress getSender() {
-		return sender;
-	}
-
-	public String getSenderName() {
-		return senderName;
+	public int getSenderID() {
+		return senderID;
 	}
 
 	public String getMessage() {
 		return message;
+	}
+
+	public LocalDateTime getTime() {
+		return time;
 	}
 
 }

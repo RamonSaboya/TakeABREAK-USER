@@ -28,8 +28,8 @@ public class SidebarPanel extends JPanel {
 		setBackground(TakeABREAK.BACKGROUND_COLOR);
 		setLayout(null);
 
-		InetSocketAddress user = UserController.getInstance().getUser();
-		JLabel usernameLabel = new JLabel("Username: " + UserController.getInstance().getName(user));
+		InetSocketAddress user = UserController.getInstance().getUser().getThird();
+		JLabel usernameLabel = new JLabel("Username: " + UserController.getInstance().getUser().getSecond());
 		usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		usernameLabel.setBounds(50, 15, 200, 15);
 		add(usernameLabel);
@@ -53,13 +53,13 @@ public class SidebarPanel extends JPanel {
 
 		// Separador da direita
 		JSeparator rightBorder = new JSeparator(SwingConstants.VERTICAL);
-		rightBorder.setBounds(299, 0, 1, 700);
+		rightBorder.setBounds(299, 0, 1, 125);
 		rightBorder.setForeground(Color.BLACK);
 		rightBorder.setBackground(Color.BLACK);
 		add(rightBorder);
 
-		JButton onlineButton = new JButton("Online");
-		onlineButton.setBounds(29, 91, 89, 23);
+		JButton onlineButton = new JButton("<html>Usuários<br />&nbsp;&nbsp;online</html>");
+		onlineButton.setBounds(5, 75, 145, 50);
 		onlineButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -76,8 +76,8 @@ public class SidebarPanel extends JPanel {
 		});
 		add(onlineButton);
 
-		JButton chatButton = new JButton("Conversas");
-		chatButton.setBounds(188, 91, 89, 23);
+		JButton chatButton = new JButton("<html>Conversas<br />&nbsp;e grupos</html>");
+		chatButton.setBounds(150, 75, 145, 50);
 		chatButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

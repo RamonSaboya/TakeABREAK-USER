@@ -1,22 +1,17 @@
 package br.ufpe.cin.if678.communication;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import br.ufpe.cin.if678.Encryption;
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
+import br.ufpe.cin.if678.gui.DisplayMessage;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
+import br.ufpe.cin.if678.threads.GroupCreationThread;
+import br.ufpe.cin.if678.threads.InitialRequestThread;
 import br.ufpe.cin.if678.util.Pair;
 import br.ufpe.cin.if678.util.Tuple;
 
@@ -24,64 +19,96 @@ public class Listener {
 
 	private UserController controller;
 
+	private InitialRequestThread initialRequestThread;
+	private GroupCreationThread groupCreationThread;
+
 	public Listener(UserController controller) {
 		this.controller = controller;
 	}
 
-	public void onUserListUpdate(HashMap<InetSocketAddress, String> data) {
-		controller.getAddressToName().clear();
-		controller.getNameToAddress().clear();
+	public void waitUsername(InitialRequestThread requestUsernameThread) {
+		this.initialRequestThread = requestUsernameThread;
+	}
 
-		for (Map.Entry<InetSocketAddress, String> entry : data.entrySet()) {
-			controller.getAddressToName().put(entry.getKey(), entry.getValue());
-			controller.getNameToAddress().put(entry.getValue(), entry.getKey());
+	public void waitGroupCreation(GroupCreationThread groupCreationThread) {
+		this.groupCreationThread = groupCreationThread;
+	}
+
+	public void onVerifyUsername(int ID) {
+		initialRequestThread.setID(ID);
+
+		synchronized (initialRequestThread) {
+			initialRequestThread.notify();
 		}
+	}
+
+	public void onUserConnect(Tuple<Integer, String, InetSocketAddress> data) {
+		controller.getIDToNameAddress().put(data.getFirst(), new Pair<String, InetSocketAddress>(data.getSecond(), data.getThird()));
+		controller.getNameToID().put(data.getSecond(), data.getFirst());
+		controller.getAddressToID().put(data.getThird(), data.getFirst());
 
 		TakeABREAK.getInstance().getUserListPanel().updateUsers();
 	}
 
-	public void onUserConnect(Pair<InetSocketAddress, String> data) {
-		controller.getAddressToName().put(data.getFirst(), data.getSecond());
-		controller.getNameToAddress().put(data.getSecond(), data.getFirst());
+	public void onUserListUpdate(HashMap<Integer, Pair<String, InetSocketAddress>> data) {
+		controller.getIDToNameAddress().clear();
+		controller.getNameToID().clear();
+		controller.getAddressToID().clear();
 
-		TakeABREAK.getInstance().getUserListPanel().updateUsers();
+		for (Map.Entry<Integer, Pair<String, InetSocketAddress>> entry : data.entrySet()) {
+			controller.getIDToNameAddress().put(entry.getKey(), entry.getValue());
+			controller.getNameToID().put(entry.getValue().getFirst(), entry.getKey());
+			controller.getAddressToID().put(entry.getValue().getSecond(), entry.getKey());
+		}
+
+		synchronized (initialRequestThread) {
+			initialRequestThread.notify();
+		}
 	}
 
 	public void onGroupReceive(Group group) {
 		controller.getGroups().put(group.getName(), group);
 
-		TakeABREAK.getInstance().notifyGroup(group.getName());
-
-		TakeABREAK.getInstance().getChatListPanel().updateChatList();
+		synchronized (groupCreationThread) {
+			groupCreationThread.notify();
+		}
 	}
 
-	public void onGroupAddMember(Pair<String, InetSocketAddress> data) {
+	public void onGroupAddMember(Pair<String, Integer> data) {
 		String name = data.getFirst();
-		InetSocketAddress user = data.getSecond();
+		int user = data.getSecond();
 
 		controller.getGroup(name).addMember(user);
 
-		TakeABREAK.getInstance().getChatListPanel().updateChatList();
+		synchronized (groupCreationThread) {
+			groupCreationThread.notify();
+		}
 	}
 
-	public void onGroupMessage(Tuple<String, InetSocketAddress, Object> data) {
+	public void onGroupMessage(Tuple<String, Integer, byte[]> data) {
 		String groupName = data.getFirst();
-		InetSocketAddress sender = data.getSecond();
-		byte[] encryted = (byte[]) data.getThird();
+		Integer senderID = data.getSecond();
+		byte[] encryted = data.getThird();
 
 		String message = "";
 		try {
-			message = Encryption.decryptMessage(sender.getPort(), encryted);
-		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
-				| InvalidAlgorithmParameterException | UnsupportedEncodingException e) {
+			message = Encryption.decryptMessage(senderID, encryted);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		if (controller.getGroup(groupName) == null) {
-			controller.getWriter().queueAction(UserAction.GROUP_CREATE, new Pair<InetSocketAddress, String>(UserController.getInstance().getUser(), groupName));
-		}
+			GroupCreationThread groupCreationThread = new GroupCreationThread(senderID);
+			groupCreationThread.start();
+		} else {
+			if (controller.getMessages(groupName) == null) {
+				controller.getGroupMessages().put(groupName, new ArrayList<DisplayMessage>());
+			}
 
-		TakeABREAK.getInstance().getChatPanel().receiveMessage(groupName, sender, message);
+			controller.getMessages(groupName).add(new DisplayMessage(senderID, message));
+
+			TakeABREAK.getInstance().getChatPanel().updateScreen();
+		}
 	}
 
 }

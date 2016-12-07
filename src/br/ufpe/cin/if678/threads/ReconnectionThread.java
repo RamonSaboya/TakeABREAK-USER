@@ -1,6 +1,9 @@
 package br.ufpe.cin.if678.threads;
 
+import java.io.IOException;
+
 import br.ufpe.cin.if678.UserController;
+import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 
 public class ReconnectionThread extends Thread {
 
@@ -12,7 +15,19 @@ public class ReconnectionThread extends Thread {
 
 	@Override
 	public void run() {
-		controller.initialize(controller.getIP());
+		while (true) {
+			try {
+				controller.initialize(controller.getIP());
+				TakeABREAK.getInstance().reconnected();
+				break;
+			} catch (IOException e) {
+				try {
+					sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
 	}
 
 }
