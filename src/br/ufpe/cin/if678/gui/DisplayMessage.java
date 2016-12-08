@@ -1,8 +1,11 @@
 package br.ufpe.cin.if678.gui;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class DisplayMessage {
+public class DisplayMessage implements Serializable {
+
+	private static final long serialVersionUID = -8712020972407287987L;
 
 	private int senderID;
 	private String message;

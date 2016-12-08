@@ -2,6 +2,8 @@ package br.ufpe.cin.if678.gui.frame;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -67,8 +69,15 @@ public class TakeABREAK extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1200, 725);
-		setIconImage(new ImageIcon("dependencies\\32.png").getImage());
+		setIconImage(new ImageIcon("dependencies\\logo256.png").getImage());
 		setTitle("Take a BREAK;");
+
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowEvent) {
+				UserController.getInstance().onExit();
+			}
+		});
 
 		// Inicia a contentPane (container principal)
 		this.contentPane = new JPanel();

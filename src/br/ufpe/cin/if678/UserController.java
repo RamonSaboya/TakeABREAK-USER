@@ -2,7 +2,12 @@ package br.ufpe.cin.if678;
 
 import static br.ufpe.cin.if678.communication.UserAction.REQUEST_USER_LIST;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -65,6 +70,8 @@ public class UserController {
 	private Pair<Writer, Thread> writerPair;
 
 	private HashMap<String, Group> groups;
+
+	private File userDirectory;
 
 	private UserController() {
 		this.IDToNameAddress = new HashMap<Integer, Pair<String, InetSocketAddress>>();
@@ -173,6 +180,7 @@ public class UserController {
 		return address.getAddress().getHostAddress() + ":" + address.getPort();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void assignUsername(int ID, String username) {
 		userID = ID;
 
@@ -180,6 +188,36 @@ public class UserController {
 
 		nameToID.put(username, ID);
 		addressToID.put(userAddress, ID);
+
+		userDirectory = new File("users\\" + ID + "\\");
+
+		userDirectory.mkdirs();
+
+		for (File file : userDirectory.listFiles()) {
+			if (file.getName().equals("groups.ser")) {
+				try {
+					FileInputStream FIS = new FileInputStream(file);
+					ObjectInputStream OIS = new ObjectInputStream(FIS);
+
+					groups = (HashMap<String, Group>) OIS.readObject();
+
+					OIS.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (file.getName().equals("messages.ser")) {
+				try {
+					FileInputStream FIS = new FileInputStream(file);
+					ObjectInputStream OIS = new ObjectInputStream(FIS);
+
+					groupMessages = (HashMap<String, List<DisplayMessage>>) OIS.readObject();
+
+					OIS.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
 		getWriter().queueAction(REQUEST_USER_LIST, null);
 	}
@@ -223,6 +261,36 @@ public class UserController {
 	public void tryReconnect() {
 		ReconnectionThread thread = new ReconnectionThread();
 		thread.start();
+	}
+
+	public void onExit() {
+		File file;
+
+		try {
+			file = new File(userDirectory, "groups.ser");
+			
+			FileOutputStream FOS = new FileOutputStream(file);
+			ObjectOutputStream OOS = new ObjectOutputStream(FOS);
+
+			OOS.writeObject(groupMessages);
+
+			OOS.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			file = new File(userDirectory, "messages.ser");
+			
+			FileOutputStream FOS = new FileOutputStream(file);
+			ObjectOutputStream OOS = new ObjectOutputStream(FOS);
+
+			OOS.writeObject(groupMessages);
+
+			OOS.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

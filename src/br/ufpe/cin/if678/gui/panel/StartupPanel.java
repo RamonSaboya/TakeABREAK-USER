@@ -46,7 +46,7 @@ public class StartupPanel extends JPanel {
 		bigText.setBounds(50, 200, 750, 300);
 
 		// Logo
-		JLabel logoLabel = new JLabel(new ImageIcon("dependencies\\logo.jpg"));
+		JLabel logoLabel = new JLabel(new ImageIcon("dependencies\\banner.png"));
 		logoLabel.setBounds(800, 175, 350, 350);
 
 		JLabel addressLabel = new JLabel("Digite o IP do servidor:");
