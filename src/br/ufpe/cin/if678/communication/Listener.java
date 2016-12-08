@@ -12,6 +12,7 @@ import br.ufpe.cin.if678.gui.DisplayMessage;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.threads.GroupCreationThread;
 import br.ufpe.cin.if678.threads.InitialRequestThread;
+import br.ufpe.cin.if678.threads.ReconnectionThread;
 import br.ufpe.cin.if678.util.Pair;
 import br.ufpe.cin.if678.util.Tuple;
 
@@ -21,6 +22,7 @@ public class Listener {
 
 	private Thread initialRequestThread;
 	private Thread groupCreationThread;
+	private Thread reconnectionThread;
 
 	public Listener(UserController controller) {
 		this.controller = controller;
@@ -32,6 +34,10 @@ public class Listener {
 
 	public void waitGroupCreation(GroupCreationThread groupCreationThread) {
 		this.groupCreationThread = groupCreationThread;
+	}
+
+	public void waitReconnection(ReconnectionThread reconnectionThread) {
+		this.reconnectionThread = reconnectionThread;
 	}
 
 	public void onVerifyUsername(int ID) {

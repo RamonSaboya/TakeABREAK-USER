@@ -1,6 +1,7 @@
 package br.ufpe.cin.if678.gui.frame;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -137,6 +138,8 @@ public class TakeABREAK extends JFrame {
 	}
 
 	public void reconnected() {
+		TakeABREAK.getInstance().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
 		clearFrame();
 
 		addPanel(sidebarPanel);

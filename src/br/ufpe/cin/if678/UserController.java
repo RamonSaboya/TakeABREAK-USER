@@ -2,6 +2,7 @@ package br.ufpe.cin.if678;
 
 import static br.ufpe.cin.if678.communication.UserAction.REQUEST_USER_LIST;
 
+import java.awt.Cursor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -259,6 +260,8 @@ public class UserController {
 	}
 
 	public void tryReconnect() {
+		TakeABREAK.getInstance().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
 		ReconnectionThread thread = new ReconnectionThread();
 		thread.start();
 	}
@@ -268,7 +271,7 @@ public class UserController {
 
 		try {
 			file = new File(userDirectory, "groups.ser");
-			
+
 			FileOutputStream FOS = new FileOutputStream(file);
 			ObjectOutputStream OOS = new ObjectOutputStream(FOS);
 
@@ -281,7 +284,7 @@ public class UserController {
 
 		try {
 			file = new File(userDirectory, "messages.ser");
-			
+
 			FileOutputStream FOS = new FileOutputStream(file);
 			ObjectOutputStream OOS = new ObjectOutputStream(FOS);
 
