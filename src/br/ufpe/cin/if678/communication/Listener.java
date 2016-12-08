@@ -61,6 +61,7 @@ public class Listener {
 		controller.getNameToID().clear();
 		controller.getAddressToID().clear();
 
+		System.out.println(data);
 		for (Map.Entry<Integer, Pair<String, InetSocketAddress>> entry : data.entrySet()) {
 			controller.getIDToNameAddress().put(entry.getKey(), entry.getValue());
 			controller.getNameToID().put(entry.getValue().getFirst(), entry.getKey());
@@ -78,6 +79,7 @@ public class Listener {
 		synchronized (reconnectionThread) {
 			reconnectionThread.notify();
 		}
+
 	}
 
 	public void onGroupReceive(Group group) {
