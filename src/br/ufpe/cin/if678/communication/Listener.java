@@ -85,6 +85,10 @@ public class Listener {
 	public void onGroupReceive(Group group) {
 		controller.getGroups().put(group.getName(), group);
 
+		if (groupCreationThread == null) {
+			return;
+		}
+
 		synchronized (groupCreationThread) {
 			groupCreationThread.notify();
 		}
@@ -119,6 +123,10 @@ public class Listener {
 		}
 
 		controller.getMessages(groupName).add(new DisplayMessage(senderID, message));
+
+		if (TakeABREAK.getInstance().getChatPanel() == null) {
+			return;
+		}
 
 		TakeABREAK.getInstance().getChatPanel().updateScreen();
 		TakeABREAK.getInstance().getChatListPanel().updateChatList();
