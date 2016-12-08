@@ -138,7 +138,7 @@ public class TakeABREAK extends JFrame {
 	}
 
 	public void reconnected() {
-		TakeABREAK.getInstance().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		TakeABREAK.getInstance().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
 		clearFrame();
 

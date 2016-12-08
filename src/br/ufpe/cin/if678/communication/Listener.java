@@ -70,6 +70,14 @@ public class Listener {
 		synchronized (initialRequestThread) {
 			initialRequestThread.notify();
 		}
+
+		if (reconnectionThread == null) {
+			return;
+		}
+
+		synchronized (reconnectionThread) {
+			reconnectionThread.notify();
+		}
 	}
 
 	public void onGroupReceive(Group group) {
