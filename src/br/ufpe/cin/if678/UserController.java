@@ -133,8 +133,6 @@ public class UserController {
 	}
 
 	public String getName(int ID) {
-		System.out.println(IDToNameAddress);
-
 		return IDToNameAddress.get(ID).getFirst();
 	}
 
