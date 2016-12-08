@@ -69,6 +69,10 @@ public class Listener {
 			controller.getAddressToID().put(entry.getValue().getSecond(), entry.getKey());
 		}
 
+		if (TakeABREAK.getInstance().getUserListPanel() != null) {
+			TakeABREAK.getInstance().getUserListPanel().updateUsers();
+		}
+
 		synchronized (initialRequestThread) {
 			initialRequestThread.notify();
 		}
