@@ -69,7 +69,7 @@ public class UserListPanel extends JPanel {
 		container.removeAll();
 
 		HashMap<Integer, Pair<String, InetSocketAddress>> IDToNameAddress = UserController.getInstance().getIDToNameAddress();
-		
+
 		container.setPreferredSize(new Dimension(299, (IDToNameAddress.size() * 50) + 1));
 
 		int y = 0;

@@ -132,6 +132,10 @@ public class UserController {
 		return IDToNameAddress;
 	}
 
+	public void setIDToNameAddress(HashMap<Integer, Pair<String, InetSocketAddress>> IDToNameAddress) {
+		this.IDToNameAddress = IDToNameAddress;
+	}
+
 	public String getName(int ID) {
 		return IDToNameAddress.get(ID).getFirst();
 	}

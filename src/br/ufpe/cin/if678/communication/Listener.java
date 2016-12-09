@@ -63,8 +63,8 @@ public class Listener {
 		controller.getNameToID().clear();
 		controller.getAddressToID().clear();
 
+		controller.getIDToNameAddress().putAll(data);
 		for (Map.Entry<Integer, Pair<String, InetSocketAddress>> entry : data.entrySet()) {
-			controller.getIDToNameAddress().put(entry.getKey(), entry.getValue());
 			controller.getNameToID().put(entry.getValue().getFirst(), entry.getKey());
 			controller.getAddressToID().put(entry.getValue().getSecond(), entry.getKey());
 		}
