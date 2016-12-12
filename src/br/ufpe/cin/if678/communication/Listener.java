@@ -10,10 +10,7 @@ import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.gui.DisplayMessage;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
-import br.ufpe.cin.if678.threads.FileUploadThread;
-import br.ufpe.cin.if678.threads.GroupCreationThread;
 import br.ufpe.cin.if678.threads.InitialRequestThread;
-import br.ufpe.cin.if678.threads.ReconnectionThread;
 import br.ufpe.cin.if678.util.Pair;
 import br.ufpe.cin.if678.util.Tuple;
 
@@ -22,6 +19,7 @@ public class Listener {
 	private UserController controller;
 
 	private Thread initialRequestThread;
+	private Thread RTTThread;
 	private Thread groupCreationThread;
 	private Thread reconnectionThread;
 	private Thread fileUploadThread;
@@ -30,20 +28,24 @@ public class Listener {
 		this.controller = controller;
 	}
 
-	public void waitUsername(InitialRequestThread requestUsernameThread) {
-		this.initialRequestThread = requestUsernameThread;
+	public void waitUsername(Thread thread) {
+		this.initialRequestThread = thread;
 	}
 
-	public void waitGroupCreation(GroupCreationThread groupCreationThread) {
-		this.groupCreationThread = groupCreationThread;
+	public void waitRTT(Thread thread) {
+		this.RTTThread = thread;
 	}
 
-	public void waitReconnection(ReconnectionThread reconnectionThread) {
-		this.reconnectionThread = reconnectionThread;
+	public void waitGroupCreation(Thread thread) {
+		this.groupCreationThread = thread;
 	}
 
-	public void waitFileUpload(FileUploadThread fileUploadThread) {
-		this.fileUploadThread = fileUploadThread;
+	public void waitReconnection(Thread thread) {
+		this.reconnectionThread = thread;
+	}
+
+	public void waitFileUpload(Thread thread) {
+		this.fileUploadThread = thread;
 	}
 
 	public void onVerifyUsername(int ID) {
@@ -51,6 +53,12 @@ public class Listener {
 
 		synchronized (initialRequestThread) {
 			initialRequestThread.notify();
+		}
+	}
+
+	public void onPong() {
+		synchronized (RTTThread) {
+			RTTThread.notify();
 		}
 	}
 

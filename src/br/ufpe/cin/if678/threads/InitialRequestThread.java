@@ -81,6 +81,8 @@ public class InitialRequestThread extends Thread {
 		frame.addPanel(frame.getSidebarPanel());
 		frame.addPanel(frame.getUserListPanel());
 		frame.addPanel(frame.getChatPanel());
+
+		new RTTThread().start();
 	}
 
 }

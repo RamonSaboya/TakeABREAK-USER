@@ -15,6 +15,9 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -51,6 +54,8 @@ public class ChatPanel extends JPanel {
 	private JTextField textField;
 	private JButton sendButton;
 
+	private List<JTextPane> RTTPanes;
+
 	/**
 	 * Cria o painel da página HOME.
 	 */
@@ -61,6 +66,8 @@ public class ChatPanel extends JPanel {
 		setBounds(300, 0, 900, 700);
 		setBackground(TakeABREAK.BACKGROUND_COLOR);
 		setLayout(null);
+
+		RTTPanes = new ArrayList<JTextPane>();
 
 		// Separador da esquerda
 		JSeparator leftBorder = new JSeparator(SwingConstants.VERTICAL);
@@ -151,11 +158,11 @@ public class ChatPanel extends JPanel {
 		updateScreen();
 
 		title.setText("Conversa com: " + current);
-		if (current.contains(":!:")) {
-			if (current.split(":!:")[0].equals(UserController.getInstance().getUser().getSecond())) {
-				title.setText("Conversa com: " + current.split(":!:")[1]);
+		if (current.contains("---")) {
+			if (current.split("---")[0].equals(UserController.getInstance().getUser().getSecond())) {
+				title.setText("Conversa com: " + current.split("---")[1]);
 			} else {
-				title.setText("Conversa com: " + current.split(":!:")[0]);
+				title.setText("Conversa com: " + current.split("---")[0]);
 			}
 		}
 
@@ -176,6 +183,7 @@ public class ChatPanel extends JPanel {
 
 	public void updateScreen() {
 		container.removeAll();
+		RTTPanes.clear();
 
 		if (UserController.getInstance().getMessages(current) == null) {
 			container.setPreferredSize(container.getMinimumSize());
@@ -188,6 +196,7 @@ public class ChatPanel extends JPanel {
 		int y = 0;
 		for (DisplayMessage message : UserController.getInstance().getMessages(current)) {
 			JTextPane textPane = new JTextPane();
+			textPane.setEditable(false);
 
 			if (message.getSenderID() == UserController.getInstance().getUser().getFirst()) {
 				textPane.setBounds(355, 5 + y, 500, 40);
@@ -202,8 +211,11 @@ public class ChatPanel extends JPanel {
 				File file = displayFile.getFile();
 
 				boolean download = UserController.getInstance().getUser().getFirst() != message.getSenderID();
-				textPane.setText("FILE " + (download ? "DOWNLOAD" : "UPLOAD") + ": " + displayFile.getMessage() + " (" + file.length() + ")");
+				textPane.setText("FILE " + (download ? "DOWNLOAD" : "UPLOAD") + ": " + displayFile.getMessage() + " (" + formatFileSize(file.length()) + ")");
 
+				JTextPane rtt = new JTextPane();
+				JTextPane progress = new JTextPane();
+				JTextPane time = new JTextPane();
 				JProgressBar bar = new JProgressBar();
 				JButton start = new JButton("Iniciar");
 				JButton pause = new JButton("Pausar");
@@ -215,6 +227,10 @@ public class ChatPanel extends JPanel {
 				bar.setMaximum(100);
 				bar.setValue(percentage);
 
+				rtt.setEditable(false);
+				progress.setEditable(false);
+				time.setEditable(false);
+
 				if (displayFile.getBytesSent() == file.length()) {
 					start.setEnabled(false);
 				}
@@ -223,21 +239,36 @@ public class ChatPanel extends JPanel {
 				restart.setEnabled(false);
 
 				int x = (int) textPane.getLocation().getX();
-				bar.setBounds(x, y + 45, 500, 10);
-				start.setBounds(x, y + 55, 125, 35);
-				pause.setBounds(x + 125, y + 55, 125, 35);
-				stop.setBounds(x + 250, y + 55, 125, 35);
-				restart.setBounds(x + 375, y + 55, 125, 35);
+				rtt.setBounds(x, y + 45, 100, 20);
+				progress.setBounds(x + 100, y + 45, 200, 20);
+				time.setBounds(x + 300, y + 45, 200, 20);
 
+				bar.setBounds(x, y + 65, 500, 10);
+				start.setBounds(x, y + 75, 125, 35);
+				pause.setBounds(x + 125, y + 75, 125, 35);
+				stop.setBounds(x + 250, y + 75, 125, 35);
+				restart.setBounds(x + 375, y + 75, 125, 35);
+
+				rtt.setText("RTT: 0");
+				progress.setText("0%");
+				time.setText("10 sec");
+
+				RTTPanes.add(rtt);
+
+				container.add(rtt);
+				container.add(progress);
+				container.add(time);
 				container.add(bar);
 				container.add(start);
 				container.add(pause);
 				container.add(stop);
 				container.add(restart);
 
-				setupFileTransfer(current, message.getSenderID(), displayFile, bar, start, pause, stop, restart);
+				if (displayFile.getBytesSent() < file.length()) {
+					setupFileTransfer(current, message.getSenderID(), displayFile, bar, start, pause, stop, restart);
+				}
 
-				y += 45;
+				y += 65;
 			}
 
 			container.add(textPane);
@@ -277,6 +308,36 @@ public class ChatPanel extends JPanel {
 				}
 			});
 		}
+	}
+
+	public List<JTextPane> getRTTPanes() {
+		return RTTPanes;
+	}
+
+	private static String formatFileSize(long size) {
+		String hrSize = null;
+
+		double b = size;
+		double k = size / 1024.0;
+		double m = ((size / 1024.0) / 1024.0);
+		double g = (((size / 1024.0) / 1024.0) / 1024.0);
+		double t = ((((size / 1024.0) / 1024.0) / 1024.0) / 1024.0);
+
+		DecimalFormat dec = new DecimalFormat("0.00");
+
+		if (t > 1) {
+			hrSize = dec.format(t).concat(" TB");
+		} else if (g > 1) {
+			hrSize = dec.format(g).concat(" GB");
+		} else if (m > 1) {
+			hrSize = dec.format(m).concat(" MB");
+		} else if (k > 1) {
+			hrSize = dec.format(k).concat(" KB");
+		} else {
+			hrSize = dec.format(b).concat(" Bytes");
+		}
+
+		return hrSize;
 	}
 
 }

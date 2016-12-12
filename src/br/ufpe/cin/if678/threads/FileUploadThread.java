@@ -53,6 +53,7 @@ public class FileUploadThread extends Thread {
 	public void run() {
 		try {
 			start.setEnabled(false);
+			restart.setEnabled(false);
 
 			pause.setEnabled(true);
 			stop.setEnabled(true);
@@ -102,7 +103,6 @@ public class FileUploadThread extends Thread {
 				}
 			}
 
-			System.out.println(UserController.getInstance().getIP());
 			Socket socket = new Socket(UserController.getInstance().getIP(), 4848);
 			FileInputStream FIS = new FileInputStream(file);
 			CipherOutputStream COS = new CipherOutputStream(socket.getOutputStream(), cipher);
