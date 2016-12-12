@@ -10,6 +10,7 @@ import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.gui.DisplayMessage;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
+import br.ufpe.cin.if678.threads.FileUploadThread;
 import br.ufpe.cin.if678.threads.GroupCreationThread;
 import br.ufpe.cin.if678.threads.InitialRequestThread;
 import br.ufpe.cin.if678.threads.ReconnectionThread;
@@ -23,6 +24,7 @@ public class Listener {
 	private Thread initialRequestThread;
 	private Thread groupCreationThread;
 	private Thread reconnectionThread;
+	private Thread fileUploadThread;
 
 	public Listener(UserController controller) {
 		this.controller = controller;
@@ -38,6 +40,10 @@ public class Listener {
 
 	public void waitReconnection(ReconnectionThread reconnectionThread) {
 		this.reconnectionThread = reconnectionThread;
+	}
+
+	public void waitFileUpload(FileUploadThread fileUploadThread) {
+		this.fileUploadThread = fileUploadThread;
 	}
 
 	public void onVerifyUsername(int ID) {
@@ -134,6 +140,12 @@ public class Listener {
 
 		TakeABREAK.getInstance().getChatPanel().updateScreen();
 		TakeABREAK.getInstance().getChatListPanel().updateChatList();
+	}
+
+	public void onStartUpload(byte[] object) {
+		synchronized (fileUploadThread) {
+			fileUploadThread.notify();
+		}
 	}
 
 }
