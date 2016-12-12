@@ -119,14 +119,14 @@ public class Encryption {
 	public static byte[] encryptFile(int ID, File file)
 			throws IllegalBlockSizeException, BadPaddingException, IOException, NoSuchAlgorithmException,
 			NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
+		Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding", "SunJCE");
 
 		String fullID = String.valueOf(ID);
 		while (fullID.length() < 5) {
 			fullID = "0" + fullID;
 		}
 
-		cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptKey.concat(fullID).getBytes("UTF-8"), "AES"),
+		cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptKey.concat(fullID).getBytes("UTF-8"), "DES"),
 				new IvParameterSpec(IV.getBytes()));
 
 		byte[] encryptedFile = cipher.doFinal(Files.readAllBytes(file.toPath()));
@@ -154,14 +154,14 @@ public class Encryption {
 	public static byte[] decryptFile(int ID, byte[] encryptedFile) throws IllegalBlockSizeException,
 			BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException,
 			NoSuchProviderException, NoSuchPaddingException, IOException {
-		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
+		Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding", "SunJCE");
 
 		String fullID = String.valueOf(ID);
 		while (fullID.length() < 5) {
 			fullID = "0" + fullID;
 		}
 
-		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encryptKey.concat(fullID).getBytes("UTF-8"), "AES"),
+		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encryptKey.concat(fullID).getBytes("UTF-8"), "DES"),
 				new IvParameterSpec(IV.getBytes()));
 
 		byte[] decryptedFile = cipher.doFinal(encryptedFile);
