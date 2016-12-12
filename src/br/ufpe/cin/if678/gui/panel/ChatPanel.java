@@ -268,6 +268,14 @@ public class ChatPanel extends JPanel {
 					new FileUploadThread(groupName, senderID, displayFile, bar, start, pause, stop, restart).start();
 				}
 			});
+			restart.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					displayFile.setBytesSent(0L);
+
+					new FileUploadThread(groupName, senderID, displayFile, bar, start, pause, stop, restart).start();
+				}
+			});
 		}
 	}
 

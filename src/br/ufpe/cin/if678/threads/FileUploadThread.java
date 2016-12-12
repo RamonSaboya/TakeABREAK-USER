@@ -69,6 +69,18 @@ public class FileUploadThread extends Thread {
 					}
 				}
 			});
+			stop.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					synchronized (thread) {
+						thread.interrupt();
+
+						pause.setEnabled(false);
+						stop.setEnabled(false);
+						restart.setEnabled(true);
+					}
+				}
+			});
 
 			File file = displayFile.getFile();
 
