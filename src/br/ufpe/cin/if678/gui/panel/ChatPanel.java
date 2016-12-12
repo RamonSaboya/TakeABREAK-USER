@@ -6,7 +6,11 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +22,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
@@ -29,8 +34,10 @@ import br.ufpe.cin.if678.Encryption;
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.gui.ButtonTextKeyListener;
+import br.ufpe.cin.if678.gui.DisplayFile;
 import br.ufpe.cin.if678.gui.DisplayMessage;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
+import br.ufpe.cin.if678.threads.FileUploadThread;
 import br.ufpe.cin.if678.util.Pair;
 
 @SuppressWarnings("serial")
@@ -121,8 +128,16 @@ public class ChatPanel extends JPanel {
 					return;
 				}
 
+				String message = textField.getText();
+
+				if (Files.exists(Paths.get(message), LinkOption.NOFOLLOW_LINKS)) {
+					UserController.getInstance().sendFile(groupName, new File(message));
+					resetField();
+					return;
+				}
+
 				try {
-					byte[] encrypted = Encryption.encryptMessage(UserController.getInstance().getUser().getFirst(), textField.getText());
+					byte[] encrypted = Encryption.encryptMessage(UserController.getInstance().getUser().getFirst(), message);
 					UserController.getInstance().getWriter().queueAction(UserAction.SEND_MESSAGE, new Pair<String, byte[]>(groupName, encrypted));
 				} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException
 						| InvalidAlgorithmParameterException | IOException e1) {
@@ -170,8 +185,6 @@ public class ChatPanel extends JPanel {
 			return;
 		}
 
-		container.setPreferredSize(new Dimension(299, (UserController.getInstance().getMessages(current).size() * 45) + 5));
-
 		int y = 0;
 		for (DisplayMessage message : UserController.getInstance().getMessages(current)) {
 			JTextPane textPane = new JTextPane();
@@ -184,10 +197,55 @@ public class ChatPanel extends JPanel {
 
 			textPane.setText(message.getMessage());
 
+			if (message instanceof DisplayFile) {
+				DisplayFile displayFile = (DisplayFile) message;
+				File file = displayFile.getFile();
+
+				boolean download = UserController.getInstance().getUser().getFirst() != message.getSenderID();
+				textPane.setText("FILE " + (download ? "DOWNLOAD" : "UPLOAD") + ": " + displayFile.getMessage() + " (" + file.length() + ")");
+
+				JProgressBar bar = new JProgressBar();
+				JButton start = new JButton("Iniciar");
+				JButton pause = new JButton("Pausar");
+				JButton stop = new JButton("Cancelar");
+				JButton restart = new JButton("Reiniciar");
+
+				int percentage = (int) ((displayFile.getBytesSent() * 100L) / file.length());
+				bar.setMinimum(0);
+				bar.setMaximum(100);
+				bar.setValue(percentage);
+
+				if (displayFile.getBytesSent() == file.length()) {
+					start.setEnabled(false);
+				}
+				pause.setEnabled(false);
+				stop.setEnabled(false);
+				restart.setEnabled(false);
+
+				int x = (int) textPane.getLocation().getX();
+				bar.setBounds(x, y + 45, 500, 10);
+				start.setBounds(x, y + 55, 125, 35);
+				pause.setBounds(x + 125, y + 55, 125, 35);
+				stop.setBounds(x + 250, y + 55, 125, 35);
+				restart.setBounds(x + 375, y + 55, 125, 35);
+
+				container.add(bar);
+				container.add(start);
+				container.add(pause);
+				container.add(stop);
+				container.add(restart);
+
+				setupFileTransfer(current, message.getSenderID(), displayFile, bar, start, pause, stop, restart);
+
+				y += 45;
+			}
+
 			container.add(textPane);
 
 			y += 45;
 		}
+
+		container.setPreferredSize(new Dimension(299, y + 5));
 
 		repaint();
 		revalidate();
@@ -196,6 +254,21 @@ public class ChatPanel extends JPanel {
 	public void grabFocus() {
 		textField.grabFocus();
 		textField.setCaretPosition(0);
+	}
+
+	private void setupFileTransfer(String groupName, int senderID, DisplayFile displayFile, JProgressBar bar, JButton start, JButton pause, JButton stop, JButton restart) {
+		boolean download = UserController.getInstance().getUser().getFirst() != senderID;
+
+		if (download) {
+
+		} else {
+			start.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					new FileUploadThread(groupName, senderID, displayFile, bar, start, pause, stop, restart).start();
+				}
+			});
+		}
 	}
 
 }

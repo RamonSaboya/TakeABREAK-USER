@@ -103,11 +103,11 @@ public class ChatListPanel extends JPanel {
 
 			groupLabel = new JLabel(group.getKey());
 			groupLabel.setBounds(0, y + 5, 281, 20);
-			if (group.getKey().contains(":!:")) {
-				if (group.getKey().split(":!:")[0].equals(username)) {
-					groupLabel.setText(group.getKey().split(":!:")[1]);
+			if (group.getKey().contains("---")) {
+				if (group.getKey().split("---")[0].equals(username)) {
+					groupLabel.setText(group.getKey().split("---")[1]);
 				} else {
-					groupLabel.setText(group.getKey().split(":!:")[0]);
+					groupLabel.setText(group.getKey().split("---")[0]);
 				}
 			}
 			groupLabel.setHorizontalAlignment(SwingConstants.CENTER);

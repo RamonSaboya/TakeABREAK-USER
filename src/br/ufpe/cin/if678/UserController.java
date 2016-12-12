@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import br.ufpe.cin.if678.communication.Listener;
 import br.ufpe.cin.if678.communication.Reader;
 import br.ufpe.cin.if678.communication.ServerAction;
 import br.ufpe.cin.if678.communication.Writer;
+import br.ufpe.cin.if678.gui.DisplayFile;
 import br.ufpe.cin.if678.gui.DisplayMessage;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.threads.ReconnectionThread;
@@ -169,6 +171,17 @@ public class UserController {
 		return IDToNameAddress.get(message.getSenderID()).getFirst() + ": " + message.getMessage();
 	}
 
+	public void sendFile(String groupName, File file) {
+		DisplayFile display = new DisplayFile(userID, file);
+
+		if (getMessages(groupName) == null) {
+			groupMessages.put(groupName, new ArrayList<DisplayMessage>());
+		}
+
+		getMessages(groupName).add(display);
+		TakeABREAK.getInstance().getChatPanel().updateScreen();
+	}
+
 	public Listener getListener() {
 		return listener;
 	}
@@ -247,6 +260,9 @@ public class UserController {
 			break;
 		case GROUP_MESSAGE:
 			listener.onGroupMessage((Tuple<String, Integer, byte[]>) object);
+			break;
+		case START_UPLOAD:
+			listener.onStartUpload((byte[]) object);
 			break;
 		}
 	}

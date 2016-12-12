@@ -169,7 +169,7 @@ public class Encryption {
 		return decryptedFile;
 	}
 
-	public static Cipher getEncryptCipher(int ID)
+	public static Cipher getEncryptionCipher(int ID)
 			throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException,
 			InvalidAlgorithmParameterException, UnsupportedEncodingException {
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");
@@ -185,7 +185,7 @@ public class Encryption {
 		return cipher;
 	}
 
-	public static Cipher getDecryptCipher(int ID)
+	public static Cipher getDecryptionCipher(int ID)
 			throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException,
 			InvalidAlgorithmParameterException, UnsupportedEncodingException {
 		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "SunJCE");

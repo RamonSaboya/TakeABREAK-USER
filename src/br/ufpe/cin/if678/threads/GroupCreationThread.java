@@ -26,9 +26,9 @@ public class GroupCreationThread extends Thread {
 	public void run() {
 		String person1 = controller.getName(ID);
 		String person2 = controller.getUser().getSecond();
-		String groupName = person1 + ":!:" + person2;
+		String groupName = person1 + "---" + person2;
 		if (person1.compareTo(person2) > 0) {
-			groupName = person2 + ":!:" + person1;
+			groupName = person2 + "---" + person1;
 		}
 
 		controller.getListener().waitGroupCreation(this);
