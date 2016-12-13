@@ -120,7 +120,6 @@ public class FileUploadThread extends Thread {
 
 			DataInputStream DIS = new DataInputStream(socket.getInputStream());
 			int tempFileName = DIS.readInt();
-			DIS.close();
 
 			displayFile.setTempFileName(tempFileName);
 
