@@ -18,6 +18,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
+import javax.swing.JTextPane;
 
 import br.ufpe.cin.if678.Encryption;
 import br.ufpe.cin.if678.UserController;
@@ -32,13 +33,15 @@ public class FileUploadThread extends Thread {
 	private int senderID;
 	private DisplayFile displayFile;
 
+	private JTextPane progress;
+	private JTextPane time;
 	private JProgressBar bar;
 	private JButton start;
 	private JButton pause;
 	private JButton stop;
 	private JButton restart;
 
-	public FileUploadThread(String groupName, int senderID, DisplayFile displayFile, JProgressBar bar, JButton start, JButton pause, JButton stop, JButton restart) {
+	public FileUploadThread(String groupName, int senderID, DisplayFile displayFile, JTextPane progress, JTextPane time, JProgressBar bar, JButton start, JButton pause, JButton stop, JButton restart) {
 		this.groupName = groupName;
 		this.senderID = senderID;
 		this.displayFile = displayFile;
@@ -115,6 +118,7 @@ public class FileUploadThread extends Thread {
 				if (uploaded == displayFile.getBytesSent()) {
 					displayFile.setBytesSent(displayFile.getBytesSent() + count);
 					bar.setValue((int) ((displayFile.getBytesSent() * 100L) / length));
+					progress.setText(String.format("%02d%%", bar.getValue()));
 					COS.write(buffer, 0, count);
 				}
 

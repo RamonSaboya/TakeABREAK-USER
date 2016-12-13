@@ -32,7 +32,7 @@ public class RTTThread extends Thread {
 
 			List<JTextPane> RTTPanes = TakeABREAK.getInstance().getChatPanel().getRTTPanes();
 			for (JTextPane pane : RTTPanes) {
-				pane.setText(String.format("RTT: %.03fms", (RTT / 1000000.0)));
+				pane.setText(String.format("RTT: %.02fms", (RTT / 1000000.0)));
 			}
 
 			try {

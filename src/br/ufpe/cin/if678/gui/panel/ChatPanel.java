@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
@@ -239,9 +240,9 @@ public class ChatPanel extends JPanel {
 				restart.setEnabled(false);
 
 				int x = (int) textPane.getLocation().getX();
-				rtt.setBounds(x, y + 45, 100, 20);
-				progress.setBounds(x + 100, y + 45, 200, 20);
-				time.setBounds(x + 300, y + 45, 200, 20);
+				rtt.setBounds(x + 1, y + 46, 98, 18);
+				progress.setBounds(x + 101, y + 46, 198, 18);
+				time.setBounds(x + 301, y + 46, 198, 18);
 
 				bar.setBounds(x, y + 65, 500, 10);
 				start.setBounds(x, y + 75, 125, 35);
@@ -265,7 +266,7 @@ public class ChatPanel extends JPanel {
 				container.add(restart);
 
 				if (displayFile.getBytesSent() < file.length()) {
-					setupFileTransfer(current, message.getSenderID(), displayFile, bar, start, pause, stop, restart);
+					setupFileTransfer(current, message.getSenderID(), displayFile, progress, time, bar, start, pause, stop, restart);
 				}
 
 				y += 65;
@@ -287,7 +288,7 @@ public class ChatPanel extends JPanel {
 		textField.setCaretPosition(0);
 	}
 
-	private void setupFileTransfer(String groupName, int senderID, DisplayFile displayFile, JProgressBar bar, JButton start, JButton pause, JButton stop, JButton restart) {
+	private void setupFileTransfer(String groupName, int senderID, DisplayFile displayFile, JTextPane progress, JTextPane time, JProgressBar bar, JButton start, JButton pause, JButton stop, JButton restart) {
 		boolean download = UserController.getInstance().getUser().getFirst() != senderID;
 
 		if (download) {
@@ -296,7 +297,7 @@ public class ChatPanel extends JPanel {
 			start.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					new FileUploadThread(groupName, senderID, displayFile, bar, start, pause, stop, restart).start();
+					new FileUploadThread(groupName, senderID, displayFile, progress, time, bar, start, pause, stop, restart).start();
 				}
 			});
 			restart.addActionListener(new ActionListener() {
@@ -304,7 +305,7 @@ public class ChatPanel extends JPanel {
 				public void actionPerformed(ActionEvent event) {
 					displayFile.setBytesSent(0L);
 
-					new FileUploadThread(groupName, senderID, displayFile, bar, start, pause, stop, restart).start();
+					new FileUploadThread(groupName, senderID, displayFile, progress, time, bar, start, pause, stop, restart).start();
 				}
 			});
 		}
