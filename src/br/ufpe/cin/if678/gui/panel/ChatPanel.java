@@ -241,9 +241,9 @@ public class ChatPanel extends JPanel {
 				restart.setEnabled(false);
 
 				int x = (int) textPane.getLocation().getX();
-				rtt.setBounds(x, y + 44, 98, 16);
-				progress.setBounds(x + 102, y + 44, 196, 16);
-				time.setBounds(x + 302, y + 44, 198, 16);
+				rtt.setBounds(x, y + 47, 98, 16);
+				progress.setBounds(x + 102, y + 47, 196, 16);
+				time.setBounds(x + 302, y + 47, 198, 16);
 
 				bar.setBounds(x, y + 65, 500, 10);
 				start.setBounds(x, y + 75, 125, 35);
