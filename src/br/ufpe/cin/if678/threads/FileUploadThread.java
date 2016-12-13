@@ -45,6 +45,9 @@ public class FileUploadThread extends Thread {
 		this.groupName = groupName;
 		this.senderID = senderID;
 		this.displayFile = displayFile;
+
+		this.progress = progress;
+		this.time = time;
 		this.bar = bar;
 		this.start = start;
 		this.pause = pause;
