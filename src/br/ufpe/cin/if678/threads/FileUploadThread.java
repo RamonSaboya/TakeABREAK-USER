@@ -2,6 +2,7 @@ package br.ufpe.cin.if678.threads;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.communication.Writer;
 import br.ufpe.cin.if678.gui.DisplayFile;
+import br.ufpe.cin.if678.util.Pair;
 import br.ufpe.cin.if678.util.Tuple;
 
 public class FileUploadThread extends Thread {
@@ -97,7 +99,12 @@ public class FileUploadThread extends Thread {
 			long length = file.length();
 
 			Writer writer = UserController.getInstance().getWriter();
-			Object object = new Tuple<String, Integer, Tuple<byte[], Long, Long>>(groupName, senderID, new Tuple<byte[], Long, Long>(encryptedFileName, displayFile.getBytesSent(), length));
+
+			Pair<byte[], Integer> fileNameInfo = new Pair<byte[], Integer>(encryptedFileName, displayFile.getTempFileName());
+			Pair<Long, Long> fileSizeInfo = new Pair<Long, Long>(displayFile.getBytesSent(), length);
+			Pair<Pair<byte[], Integer>, Pair<Long, Long>> fileInfo = new Pair<Pair<byte[], Integer>, Pair<Long, Long>>(fileNameInfo, fileSizeInfo);
+
+			Object object = new Tuple<String, Integer, Pair<Pair<byte[], Integer>, Pair<Long, Long>>>(groupName, senderID, fileInfo);
 
 			UserController.getInstance().getListener().waitFileUpload(this);
 			synchronized (this) {
@@ -110,6 +117,13 @@ public class FileUploadThread extends Thread {
 			}
 
 			Socket socket = new Socket(UserController.getInstance().getIP(), 4848);
+
+			DataInputStream DIS = new DataInputStream(socket.getInputStream());
+			int tempFileName = DIS.readInt();
+			DIS.close();
+
+			displayFile.setTempFileName(tempFileName);
+
 			FileInputStream FIS = new FileInputStream(file);
 			CipherOutputStream COS = new CipherOutputStream(socket.getOutputStream(), cipher);
 

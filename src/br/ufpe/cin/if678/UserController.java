@@ -259,10 +259,15 @@ public class UserController {
 			listener.onGroupAddMember((Group) object);
 			break;
 		case GROUP_MESSAGE:
-			listener.onGroupMessage((Tuple<String, Integer, byte[]>) object);
+			Tuple<String, Integer, Object> data = (Tuple<String, Integer, Object>) object;
+			if (data.getThird() instanceof Tuple) {
+				listener.onGroupFile((Tuple<String, Integer, Tuple<Integer, byte[], Long>>) object);
+			} else {
+				listener.onGroupMessage((Tuple<String, Integer, byte[]>) object);
+			}
 			break;
 		case START_UPLOAD:
-			listener.onStartUpload((byte[]) object);
+			listener.onStartUpload();
 			break;
 		}
 	}

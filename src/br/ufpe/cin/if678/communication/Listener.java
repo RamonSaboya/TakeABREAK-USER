@@ -115,7 +115,7 @@ public class Listener {
 
 	public void onGroupMessage(Tuple<String, Integer, byte[]> data) {
 		String groupName = data.getFirst();
-		Integer senderID = data.getSecond();
+		int senderID = data.getSecond();
 		byte[] encryted = data.getThird();
 
 		String message = "";
@@ -139,7 +139,26 @@ public class Listener {
 		TakeABREAK.getInstance().getChatListPanel().updateChatList();
 	}
 
-	public void onStartUpload(byte[] object) {
+	public void onGroupFile(Tuple<String, Integer, Tuple<Integer, byte[], Long>> data) {
+		String groupName = data.getFirst();
+		int senderID = data.getSecond();
+		Tuple<Integer, byte[], Long> fileInfo = data.getThird();
+
+		int tempFileName = fileInfo.getFirst();
+		byte[] encryptedFileName = fileInfo.getSecond();
+		long fileLength = fileInfo.getThird();
+
+		String fileName = String.valueOf(tempFileName);
+		try {
+			fileName = Encryption.decryptMessage(senderID, encryptedFileName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println(String.format("Recebendo %s (%d) de %d no grupo %s.", fileName, fileLength, senderID, groupName));
+	}
+
+	public void onStartUpload() {
 		synchronized (fileUploadThread) {
 			fileUploadThread.notify();
 		}
