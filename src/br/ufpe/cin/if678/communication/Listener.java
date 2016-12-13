@@ -19,7 +19,6 @@ public class Listener {
 	private UserController controller;
 
 	private Thread initialRequestThread;
-	private Thread RTTThread;
 	private Thread groupCreationThread;
 	private Thread reconnectionThread;
 	private Thread fileUploadThread;
@@ -30,10 +29,6 @@ public class Listener {
 
 	public void waitUsername(Thread thread) {
 		this.initialRequestThread = thread;
-	}
-
-	public void waitRTT(Thread thread) {
-		this.RTTThread = thread;
 	}
 
 	public void waitGroupCreation(Thread thread) {
@@ -53,12 +48,6 @@ public class Listener {
 
 		synchronized (initialRequestThread) {
 			initialRequestThread.notify();
-		}
-	}
-
-	public void onPong() {
-		synchronized (RTTThread) {
-			RTTThread.notify();
 		}
 	}
 

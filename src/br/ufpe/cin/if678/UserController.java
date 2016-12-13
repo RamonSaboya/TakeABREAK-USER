@@ -246,9 +246,6 @@ public class UserController {
 		case VERIFY_USERNAME:
 			listener.onVerifyUsername((Integer) object);
 			break;
-		case PONG:
-			listener.onPong();
-			break;
 		case USER_CONNECTED:
 			listener.onUserConnect((Tuple<Integer, String, InetSocketAddress>) object);
 			break;

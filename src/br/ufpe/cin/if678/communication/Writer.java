@@ -7,7 +7,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import br.ufpe.cin.if678.threads.RTTThread;
 import br.ufpe.cin.if678.util.Pair;
 
 /**
@@ -92,10 +91,6 @@ public class Writer implements Runnable {
 				// Pega a ação e seu objeto
 				UserAction action = pair.getFirst();
 				Object object = pair.getSecond();
-
-				if (action == UserAction.PING) {
-					RTTThread.RTT = System.nanoTime();
-				}
 
 				// Manda os objetos pela stream
 				OOS.writeObject(action);
