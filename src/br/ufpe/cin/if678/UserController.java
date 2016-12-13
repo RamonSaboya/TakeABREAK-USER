@@ -23,6 +23,7 @@ import br.ufpe.cin.if678.communication.ServerAction;
 import br.ufpe.cin.if678.communication.Writer;
 import br.ufpe.cin.if678.gui.DisplayFile;
 import br.ufpe.cin.if678.gui.DisplayMessage;
+import br.ufpe.cin.if678.gui.DisplayReceivingFile;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.threads.ReconnectionThread;
 import br.ufpe.cin.if678.util.Pair;
@@ -179,6 +180,15 @@ public class UserController {
 		}
 
 		getMessages(groupName).add(display);
+		TakeABREAK.getInstance().getChatPanel().updateScreen();
+	}
+	
+	public void receiveFile(String groupName, int senderID, DisplayReceivingFile displayFile) {
+		if (getMessages(groupName) == null) {
+			groupMessages.put(groupName, new ArrayList<DisplayMessage>());
+		}
+
+		getMessages(groupName).add(displayFile);
 		TakeABREAK.getInstance().getChatPanel().updateScreen();
 	}
 

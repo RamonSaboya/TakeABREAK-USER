@@ -48,7 +48,7 @@ public class Reader implements Runnable {
 				// Lê a ação e o objecto que esteja relacionado a mesma
 				ServerAction action = (ServerAction) OIS.readObject();
 				Object object = OIS.readObject();
-
+				
 				controller.callEvent(action, object);
 			} catch (SocketException | SocketTimeoutException e) {
 				// Essa exeção será chamada quando o servidor não conseguir conexão com o servidor

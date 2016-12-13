@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
@@ -40,7 +39,9 @@ import br.ufpe.cin.if678.communication.UserAction;
 import br.ufpe.cin.if678.gui.ButtonTextKeyListener;
 import br.ufpe.cin.if678.gui.DisplayFile;
 import br.ufpe.cin.if678.gui.DisplayMessage;
+import br.ufpe.cin.if678.gui.DisplayReceivingFile;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
+import br.ufpe.cin.if678.threads.FileDownloadThread;
 import br.ufpe.cin.if678.threads.FileUploadThread;
 import br.ufpe.cin.if678.util.Pair;
 
@@ -240,9 +241,9 @@ public class ChatPanel extends JPanel {
 				restart.setEnabled(false);
 
 				int x = (int) textPane.getLocation().getX();
-				rtt.setBounds(x + 1, y + 46, 98, 18);
-				progress.setBounds(x + 101, y + 46, 198, 18);
-				time.setBounds(x + 301, y + 46, 198, 18);
+				rtt.setBounds(x, y + 44, 98, 16);
+				progress.setBounds(x + 102, y + 44, 196, 16);
+				time.setBounds(x + 302, y + 44, 198, 16);
 
 				bar.setBounds(x, y + 65, 500, 10);
 				start.setBounds(x, y + 75, 125, 35);
@@ -251,7 +252,7 @@ public class ChatPanel extends JPanel {
 				restart.setBounds(x + 375, y + 75, 125, 35);
 
 				rtt.setText("RTT: 0");
-				progress.setText("0%");
+				progress.setText(String.format("%02d%%", bar.getValue()));
 				time.setText("10 sec");
 
 				RTTPanes.add(rtt);
@@ -267,6 +268,68 @@ public class ChatPanel extends JPanel {
 
 				if (displayFile.getBytesSent() < file.length()) {
 					setupFileTransfer(current, message.getSenderID(), displayFile, progress, time, bar, start, pause, stop, restart);
+				}
+
+				y += 65;
+			} else if (message instanceof DisplayReceivingFile) {
+				DisplayReceivingFile displayFile = (DisplayReceivingFile) message;
+
+				boolean download = UserController.getInstance().getUser().getFirst() != message.getSenderID();
+				textPane.setText("FILE " + (download ? "DOWNLOAD" : "UPLOAD") + ": " + displayFile.getMessage() + " (" + formatFileSize(displayFile.getLength()) + ")");
+
+				JTextPane rtt = new JTextPane();
+				JTextPane progress = new JTextPane();
+				JTextPane time = new JTextPane();
+				JProgressBar bar = new JProgressBar();
+				JButton start = new JButton("Iniciar");
+				JButton pause = new JButton("Pausar");
+				JButton stop = new JButton("Cancelar");
+				JButton restart = new JButton("Reiniciar");
+
+				int percentage = (int) ((displayFile.getBytesReceived() * 100L) / displayFile.getLength());
+				bar.setMinimum(0);
+				bar.setMaximum(100);
+				bar.setValue(percentage);
+
+				rtt.setEditable(false);
+				progress.setEditable(false);
+				time.setEditable(false);
+
+				if (displayFile.getBytesReceived() == displayFile.getLength()) {
+					start.setEnabled(false);
+				}
+				pause.setEnabled(false);
+				stop.setEnabled(false);
+				restart.setEnabled(false);
+
+				int x = (int) textPane.getLocation().getX();
+				rtt.setBounds(x, y + 44, 98, 16);
+				progress.setBounds(x + 102, y + 44, 196, 16);
+				time.setBounds(x + 302, y + 44, 198, 16);
+
+				bar.setBounds(x, y + 65, 500, 10);
+				start.setBounds(x, y + 75, 125, 35);
+				pause.setBounds(x + 125, y + 75, 125, 35);
+				stop.setBounds(x + 250, y + 75, 125, 35);
+				restart.setBounds(x + 375, y + 75, 125, 35);
+
+				rtt.setText("RTT: 0");
+				progress.setText(String.format("%02d%%", bar.getValue()));
+				time.setText("10 sec");
+
+				RTTPanes.add(rtt);
+
+				container.add(rtt);
+				container.add(progress);
+				container.add(time);
+				container.add(bar);
+				container.add(start);
+				container.add(pause);
+				container.add(stop);
+				container.add(restart);
+
+				if (displayFile.getBytesReceived() < displayFile.getLength()) {
+					setupFileReceive(current, message.getSenderID(), displayFile, progress, time, bar, start, pause, stop, restart);
 				}
 
 				y += 65;
@@ -308,6 +371,28 @@ public class ChatPanel extends JPanel {
 					new FileUploadThread(groupName, senderID, displayFile, progress, time, bar, start, pause, stop, restart).start();
 				}
 			});
+		}
+	}
+
+	private void setupFileReceive(String groupName, int senderID, DisplayReceivingFile displayFile, JTextPane progress, JTextPane time, JProgressBar bar, JButton start, JButton pause, JButton stop, JButton restart) {
+		boolean download = UserController.getInstance().getUser().getFirst() != senderID;
+
+		if (download) {
+			start.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					new FileDownloadThread(groupName, senderID, displayFile, progress, time, bar, start, pause, stop, restart).start();
+				}
+			});
+			restart.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					displayFile.setBytesReceived(0L);
+
+					new FileDownloadThread(groupName, senderID, displayFile, progress, time, bar, start, pause, stop, restart).start();
+				}
+			});
+		} else {
 		}
 	}
 

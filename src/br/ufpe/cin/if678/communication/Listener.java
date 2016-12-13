@@ -9,6 +9,7 @@ import br.ufpe.cin.if678.Encryption;
 import br.ufpe.cin.if678.UserController;
 import br.ufpe.cin.if678.business.Group;
 import br.ufpe.cin.if678.gui.DisplayMessage;
+import br.ufpe.cin.if678.gui.DisplayReceivingFile;
 import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 import br.ufpe.cin.if678.threads.InitialRequestThread;
 import br.ufpe.cin.if678.util.Pair;
@@ -155,7 +156,8 @@ public class Listener {
 			e.printStackTrace();
 		}
 
-		System.out.println(String.format("Recebendo %s (%d) de %d no grupo %s.", fileName, fileLength, senderID, groupName));
+		DisplayReceivingFile displayFile = new DisplayReceivingFile(senderID, tempFileName, fileName, fileLength);
+		controller.receiveFile(groupName, senderID, displayFile);
 	}
 
 	public void onStartUpload() {
