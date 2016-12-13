@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import br.ufpe.cin.if678.UserController;
+import br.ufpe.cin.if678.threads.RTTThread;
 
 /**
  * Gerenciador de leitura de um socket
@@ -48,6 +49,10 @@ public class Reader implements Runnable {
 				// Lê a ação e o objecto que esteja relacionado a mesma
 				ServerAction action = (ServerAction) OIS.readObject();
 				Object object = OIS.readObject();
+
+				if (action == ServerAction.PONG) {
+					RTTThread.RTT = System.nanoTime() - RTTThread.RTT;
+				}
 
 				controller.callEvent(action, object);
 			} catch (SocketException | SocketTimeoutException e) {

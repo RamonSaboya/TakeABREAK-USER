@@ -10,25 +10,20 @@ import br.ufpe.cin.if678.gui.frame.TakeABREAK;
 
 public class RTTThread extends Thread {
 
-	private static long RTT = 0;
+	public static long RTT = 0;
 
 	@Override
 	public void run() {
 		while (true) {
-			long start = System.nanoTime();
-
 			UserController.getInstance().getListener().waitRTT(this);
 			synchronized (this) {
 				try {
 					UserController.getInstance().getWriter().queueAction(UserAction.PING, null);
-					start = System.nanoTime();
 					wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-
-			RTT = System.nanoTime() - start;
 
 			List<JTextPane> RTTPanes = TakeABREAK.getInstance().getChatPanel().getRTTPanes();
 			for (JTextPane pane : RTTPanes) {
