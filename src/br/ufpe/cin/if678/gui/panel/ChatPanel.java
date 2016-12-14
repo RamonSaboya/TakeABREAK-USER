@@ -241,9 +241,10 @@ public class ChatPanel extends JPanel {
 				restart.setEnabled(false);
 
 				int x = (int) textPane.getLocation().getX();
-				rtt.setBounds(x, y + 47, 98, 16);
-				progress.setBounds(x + 102, y + 47, 196, 16);
-				time.setBounds(x + 302, y + 47, 198, 16);
+				textPane.setBounds(x, 5 + y, 500, 38);
+				rtt.setBounds(x, y + 45, 98, 18);
+				progress.setBounds(x + 102, y + 45, 196, 18);
+				time.setBounds(x + 302, y + 45, 198, 18);
 
 				bar.setBounds(x, y + 65, 500, 10);
 				start.setBounds(x, y + 75, 125, 35);
@@ -303,9 +304,10 @@ public class ChatPanel extends JPanel {
 				restart.setEnabled(false);
 
 				int x = (int) textPane.getLocation().getX();
-				rtt.setBounds(x, y + 44, 98, 16);
-				progress.setBounds(x + 102, y + 44, 196, 16);
-				time.setBounds(x + 302, y + 44, 198, 16);
+				textPane.setBounds(x, 5 + y, 500, 38);
+				rtt.setBounds(x, y + 45, 98, 18);
+				progress.setBounds(x + 102, y + 45, 196, 18);
+				time.setBounds(x + 302, y + 45, 198, 18);
 
 				bar.setBounds(x, y + 65, 500, 10);
 				start.setBounds(x, y + 75, 125, 35);
