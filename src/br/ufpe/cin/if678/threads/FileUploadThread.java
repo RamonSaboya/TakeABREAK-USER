@@ -11,6 +11,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.ArrayList;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -84,6 +85,7 @@ public class FileUploadThread extends Thread {
 					synchronized (thread) {
 						thread.interrupt();
 
+						start.setEnabled(false);
 						pause.setEnabled(false);
 						stop.setEnabled(false);
 						restart.setEnabled(true);
@@ -130,16 +132,31 @@ public class FileUploadThread extends Thread {
 
 			int count;
 			long uploaded = 0;
+			long time = 0;
+			long start = System.currentTimeMillis();
+			int counting = 0;
+			ArrayList<Double> avg = new ArrayList<Double>();
 			while ((count = FIS.read(buffer)) > 0 && !isInterrupted()) {
 				if (uploaded == displayFile.getBytesSent()) {
 					displayFile.setBytesSent(displayFile.getBytesSent() + count);
 					bar.setValue((int) ((displayFile.getBytesSent() * 100L) / length));
 					progress.setText(String.format("%02d%%", bar.getValue()));
 					COS.write(buffer, 0, count);
+					time += System.currentTimeMillis() - start;
+					counting += count;
+					start = System.currentTimeMillis();
+					if (time >= 1000) {
+						avg.add((double) counting);
+						counting = 0;
+						time = 0;
+						this.time.setText(String.format("%.02f segundos", ((length - uploaded) / getAvg(avg, 5))));
+					}
 				}
 
 				uploaded += count;
 			}
+
+			this.time.setText("");
 
 			if (!isInterrupted()) {
 				pause.setEnabled(false);
@@ -166,6 +183,15 @@ public class FileUploadThread extends Thread {
 		} catch (InvalidAlgorithmParameterException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private double getAvg(ArrayList<Double> avg, int amount) {
+		double value = avg.get(avg.size() - 1);
+		for (int c = Math.max(avg.size() - amount, 0); c < avg.size(); c++) {
+			value += avg.get(c);
+			value /= 2;
+		}
+		return value;
 	}
 
 }

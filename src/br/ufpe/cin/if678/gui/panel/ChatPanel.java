@@ -254,7 +254,6 @@ public class ChatPanel extends JPanel {
 
 				rtt.setText("RTT: 0");
 				progress.setText(String.format("%02d%%", bar.getValue()));
-				time.setText("10 sec");
 
 				RTTPanes.add(rtt);
 
@@ -317,7 +316,6 @@ public class ChatPanel extends JPanel {
 
 				rtt.setText("RTT: 0");
 				progress.setText(String.format("%02d%%", bar.getValue()));
-				time.setText("10 sec");
 
 				RTTPanes.add(rtt);
 
