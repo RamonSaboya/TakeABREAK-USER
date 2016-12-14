@@ -182,7 +182,7 @@ public class UserController {
 		getMessages(groupName).add(display);
 		TakeABREAK.getInstance().getChatPanel().updateScreen();
 	}
-	
+
 	public void receiveFile(String groupName, int senderID, DisplayReceivingFile displayFile) {
 		if (getMessages(groupName) == null) {
 			groupMessages.put(groupName, new ArrayList<DisplayMessage>());
@@ -276,13 +276,7 @@ public class UserController {
 			break;
 		case GROUP_MESSAGE:
 			Tuple<String, Integer, Object> data = (Tuple<String, Integer, Object>) object;
-			
-			if(data.getThird() instanceof byte[]) {
-				System.out.println("BYTES");
-			} else {
-				System.out.println("TUPLE");
-			}
-			
+
 			if (data.getThird() instanceof Tuple) {
 				listener.onGroupFile((Tuple<String, Integer, Tuple<Integer, byte[], Long>>) object);
 			} else {
